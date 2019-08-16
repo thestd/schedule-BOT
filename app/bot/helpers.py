@@ -1,4 +1,4 @@
-from app.dispatcher.handlers import cmd_start, register_user, Schedule, \
+from app.bot.handlers import cmd_start, register_user, Schedule, \
     query_init
 
 

@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils import executor
 
-from app.dispatcher import add_handlers
+from app.bot import add_handlers
 
 
 def run(bot_token, skip_updates=True):

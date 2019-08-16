@@ -1,6 +1,6 @@
 from aiogram import types, Bot
 
-from app.dispatcher.state_machine import Schedule
+from app.bot.state_machine import Schedule
 
 __all__ = ["cmd_start", "register_user", "query_init", ]
 
