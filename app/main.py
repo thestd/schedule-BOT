@@ -1,16 +1,10 @@
-import asyncio
-
-from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.utils import executor
 
-from app.bot import add_handlers
+from app.core.config import skip_updates
+from app.core.helper import load_modules
+from app.core.misc import dp, loop
 
 
-def run(bot_token, skip_updates=True):
-    loop = asyncio.get_event_loop()
-    bot = Bot(token=bot_token, loop=loop)
-    storage = MemoryStorage()
-    dp = Dispatcher(bot, storage=storage)
-    add_handlers(dp)
+def run():
+    load_modules()
     executor.start_polling(dp, loop=loop, skip_updates=skip_updates)
