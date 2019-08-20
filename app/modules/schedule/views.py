@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from aiogram import types
 from aiogram.utils import emoji
 
-from app.modules.schedule.consts import search_query, week_days
+from app.modules.schedule.consts import query_for_search, week_days, \
+    query_predict
 
 
 def query_type_view() -> str:
@@ -11,7 +12,7 @@ def query_type_view() -> str:
 
 
 def query_view(q_type: str, query: str) -> (str, types.InlineKeyboardMarkup):
-    text = f"<i>Розклад для {q_type}</i>"
+    text = f"<i>Розклад для {query}</i>"
     today = datetime.now()
     week_start_date = today - timedelta(days=today.weekday())
     return text, generate_search_view(q_type, query,
@@ -24,9 +25,20 @@ def _generate_single_key(txt: str, q_type: str, query: str,
                          day_number: str) -> types.InlineKeyboardButton:
     return types.InlineKeyboardButton(
         txt,
-        callback_data=search_query.new(q_type, query, week_start_date,
-                                       day_number)
+        callback_data=query_for_search.new(q_type, query, week_start_date,
+                                           day_number)
     )
+
+
+def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
+    text = "Ось що вдалося знайти:"
+    markup = types.InlineKeyboardMarkup()
+    for elem in values:
+        markup.add(types.InlineKeyboardButton(
+            elem,
+            callback_data=query_predict.new(elem))
+        )
+    return text, markup
 
 
 def generate_search_view(q_type: str, query: str, week_date: str,

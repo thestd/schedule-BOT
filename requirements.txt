@@ -1,3 +1,4 @@
+motor
 aiogram==2.2
 aiohttp==3.5.4
 async-timeout==3.0.1

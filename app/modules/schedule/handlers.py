@@ -2,18 +2,17 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified
 
-from app.core.misc import dp, bot
-from app.modules.schedule.consts import query_type, search_query
+from app.core.misc import bot, db, api_client
+from app.modules.base.handlers import cmd_change_query
 from app.modules.schedule.views import query_type_view, query_view, \
-    generate_search_view
+    generate_search_view, generate_predict_view
 
-__all__ = ["query_register", "query_type_register"]
+__all__ = ["query_register", "query_type_register", "search_query",
+           "confirm_predicted_query"]
 
 
-@dp.callback_query_handler(query_type.filter(),
-                           state="wait_query_type_register")
 async def query_type_register(query: types.CallbackQuery, callback_data: dict,
-                              state: FSMContext):
+                              state: FSMContext, user: dict):
     """
     Save query type (teacher, group)
     """
@@ -21,42 +20,63 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     await bot.edit_message_text(text=text,
                                 chat_id=query.message.chat.id,
                                 message_id=query.message.message_id)
-    async with state.proxy() as data:
-        data['query_type'] = callback_data["type"]
-        data["msg"] = query.message.message_id
-
-    await state.set_state("wait_query_register")
+    await db.update_user(user["id"], query_type=callback_data["type"])
+    await state.set_state("query_register")
 
 
-@dp.message_handler(state='*')
-async def query_register(message: types.Message, state: FSMContext):
+async def query_register(message: types.Message, state: FSMContext,
+                         user: dict):
     """
     Save query (e.g. `ІПЗ-3`, `КН-41`)
     """
-    async with state.proxy() as data:
-        data["query"] = message.text
-        text, markup = query_view(data["query"], data['query'])
-        await bot.delete_message(message.chat.id, message.message_id)
-        await bot.edit_message_text(text,
-                                    chat_id=message.chat.id,
-                                    reply_markup=markup,
-                                    message_id=data["msg"],
-                                    parse_mode='HTML')
-        await state.set_state("wait_search_query")
+    if not user["query_type"]:
+        await cmd_change_query(message)
+        return
+    values = await api_client.group_predict(message.text)
+    await bot.delete_message(message.chat.id, message.message_id)
+    if values:
+        txt, markup = generate_predict_view(values)
+        await bot.send_message(text=txt,
+                               chat_id=message.chat.id,
+                               reply_markup=markup,
+                               parse_mode='HTML')
+        await state.set_state("confirm_predicted_query")
+    else:
+        await bot.send_message(text="Нічого не вдалось знайти, спробуй ще "
+                                    "раз",
+                               chat_id=message.chat.id,
+                               parse_mode='HTML')
 
 
-@dp.callback_query_handler(search_query.filter(), state="wait_search_query")
+async def confirm_predicted_query(query: types.CallbackQuery,
+                                  callback_data: dict, state: FSMContext,
+                                  user: dict):
+    await db.update_user(user["id"], query=callback_data["name"])
+    text, markup = query_view(user["query_type"], callback_data["name"])
+    await bot.delete_message(query.message.chat.id, query.message.message_id)
+    await bot.send_message(text=text,
+                           chat_id=query.message.chat.id,
+                           reply_markup=markup,
+                           parse_mode='HTML')
+    await state.set_state("search_query")
+
+
 async def search_query(query: types.CallbackQuery, callback_data: dict,
-                       state: FSMContext):
-    async with state.proxy() as data:
-        markup = generate_search_view(data["query_type"], data["query"],
-                                      callback_data["week_date"],
-                                      callback_data["day_number"])
+                       user: dict):
+    if not user["query_type"] or not user["query"]:
+        await cmd_change_query(query.message)
+        return
+
+    markup = generate_search_view(user["query_type"], user["query"],
+                                  callback_data["week_date"],
+                                  callback_data["day_number"])
     try:
-        await bot.edit_message_text(text=f"{callback_data}",
+        await bot.edit_message_text(text=f"User: {user}"
+                                         f"data: {callback_data}",
                                     chat_id=query.message.chat.id,
                                     message_id=query.message.message_id,
                                     reply_markup=markup)
-        await query.answer()
     except MessageNotModified:
         pass
+    finally:
+        await query.answer()
