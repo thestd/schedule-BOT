@@ -12,14 +12,20 @@ async def cmd_start(message: types.Message, state: FSMContext):
     """
     Start conversation
     """
-    text, markup = start_view()
     await bot.delete_message(message.chat.id, message.message_id)
+    await bot.send_message(chat_id=message.chat.id, text=await about_view(),
+                           parse_mode='HTML')
+    await bot.send_message(chat_id=message.chat.id, text=help_view(),
+                           parse_mode='HTML')
+    text, markup = start_view()
     await bot.send_message(chat_id=message.chat.id, text=text,
                            reply_markup=markup, parse_mode='HTML')
+    await state.update_data(message.from_user.to_python(),
+                            msg_to_edit=message.message_id)
     await state.set_state("query_type_register")
 
 
-async def cmd_change_query(message: types.Message):
+async def cmd_change_query(message: types.Message, state: FSMContext):
     """
     Change query type
     """
@@ -27,6 +33,7 @@ async def cmd_change_query(message: types.Message):
     await bot.delete_message(message.chat.id, message.message_id)
     await bot.send_message(chat_id=message.chat.id, text=text,
                            reply_markup=markup, parse_mode='HTML')
+    await state.set_state("query_type_register")
 
 
 async def cmd_about(message: types.Message):

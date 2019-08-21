@@ -2,16 +2,14 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.contrib.fsm_storage.mongo import MongoStorage
 
 from app.core.client import ApiClient
-from app.core.config import bot_token, mongo_url
-from app.core.db import MongoStorage
+from app.core.config import bot_token
 
 logger = logging.getLogger(__name__)
 loop = asyncio.get_event_loop()
 bot = Bot(token=bot_token, loop=loop)
-db = MongoStorage(mongo_url)
 api_client = ApiClient()
-storage = MemoryStorage()
+storage = MongoStorage(username="root", password="example")
 dp = Dispatcher(bot, storage=storage)
