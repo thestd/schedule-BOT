@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified
 
 from app.core.misc import bot, api_client
-from app.modules.schedule.views import query_type_view, query_view, \
+from app.modules.schedule.views import query_type_view, \
     generate_search_view, generate_predict_view
 
 __all__ = ["query_register", "query_type_register", "search_query",
