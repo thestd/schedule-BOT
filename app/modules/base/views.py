@@ -9,7 +9,7 @@ def get_query_type_markup() -> types.InlineKeyboardMarkup:
     line_markup = types.InlineKeyboardMarkup(row_width=2)
     line_markup.add(types.InlineKeyboardButton(
         "Студент",
-        callback_data=query_type.new("student"))
+        callback_data=query_type.new("group"))
     )
     line_markup.add(types.InlineKeyboardButton(
         "Викладач",

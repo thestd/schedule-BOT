@@ -3,12 +3,13 @@ from datetime import datetime, timedelta
 from aiogram import types
 from aiogram.utils import emoji
 
+from app.core.misc import api_client
 from app.modules.schedule.consts import query_for_search, week_days, \
     query_predict
 
 
 def query_type_view(query_type: str) -> str:
-    if query_type == "student":
+    if query_type == "group":
         return "Готово. Тепер відправ мені шфир (або частину шифру) своєї " \
                "групи:"
     else:
@@ -44,8 +45,9 @@ def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
     return text, markup
 
 
-def generate_search_view(query: str, query_type: str, week_date: str,
-                         day_number: str) -> (str, types.InlineKeyboardMarkup):
+async def generate_search_view(query: str, query_type: str, week_date: str,
+                               day_number: str) -> (
+        str, types.InlineKeyboardMarkup):
     week_date = datetime.strptime(week_date, '%d.%m.%Y')
     today = datetime.now()
     today_week = today - timedelta(days=today.weekday())
@@ -53,7 +55,9 @@ def generate_search_view(query: str, query_type: str, week_date: str,
     next_week = (week_date + timedelta(days=7)).strftime("%d.%m.%Y")
     requested_day = (week_date + timedelta(days=int(day_number))).strftime(
         "%d.%m.%Y")
-    text = f"{query} to {requested_day}"
+    res = await api_client.get_schedule({query_type: query,
+                                         "date_from": requested_day})
+    text = f"{query} to {requested_day}\n{res}"
 
     days_markup = []
     for day in week_days:

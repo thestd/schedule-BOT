@@ -56,10 +56,11 @@ async def confirm_predicted_query(query: types.CallbackQuery,
     usr_data = await state.get_data()
     today = datetime.now()
     week_start_date = today - timedelta(days=today.weekday())
-    text, markup = generate_search_view(usr_data["query"],
-                                        usr_data["query_type"],
-                                        week_start_date.strftime("%d.%m.%Y"),
-                                        f"{today.weekday()}")
+    text, markup = await generate_search_view(usr_data["query"],
+                                              usr_data["query_type"],
+                                              week_start_date.strftime(
+                                                  "%d.%m.%Y"),
+                                              f"{today.weekday()}")
     await bot.edit_message_text(text=text,
                                 chat_id=query.message.chat.id,
                                 message_id=query.message.message_id,
@@ -71,10 +72,10 @@ async def confirm_predicted_query(query: types.CallbackQuery,
 async def search_query(query: types.CallbackQuery, callback_data: dict,
                        state: FSMContext):
     usr_data = await state.get_data()
-    text, markup = generate_search_view(usr_data["query"],
-                                        usr_data["query_type"],
-                                        callback_data["week_date"],
-                                        callback_data["day_number"])
+    text, markup = await generate_search_view(usr_data["query"],
+                                              usr_data["query_type"],
+                                              callback_data["week_date"],
+                                              callback_data["day_number"])
     try:
         await bot.edit_message_text(text=text,
                                     chat_id=query.message.chat.id,
