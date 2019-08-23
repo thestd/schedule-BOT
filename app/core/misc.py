@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.mongo import MongoStorage
 
 from app.core.client import ApiClient
-from app.core.config import TOKEN, MONGO_URL
+from app.core.config import TOKEN, MONGO_URL, MONGO_PORT
 from app.core.utils import RedisCache
 
 logger = logging.getLogger(__name__)
