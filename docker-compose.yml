@@ -12,7 +12,7 @@ services:
   redis:
     image: redis:alpine
     ports:
-      - 6379:6379
+      - 6400:6379
 
   bot:
     build: .
