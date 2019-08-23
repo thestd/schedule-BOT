@@ -12,8 +12,9 @@ API_URL = os.environ.get("API_URL", "http://api.pnu-bot.pp.ua")
 
 BASE_APP = __package__.split('.')[0]
 
-MONGO_URL = os.environ.get('MONGO_URL', "mongo")
-MONGO_PORT = int(os.environ.get('MONGO_PORT', '27017'))
+MONGO_URL = os.environ.get("MONGO_URL", "localhost")
+MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
+
 modules = [
     "base",
     "schedule",
