@@ -14,5 +14,5 @@ loop = asyncio.get_event_loop()
 api_client = ApiClient(RedisCache())
 
 bot = Bot(token=TOKEN, loop=loop)
-storage = MongoStorage(host=MONGO_URL)
+storage = MongoStorage(host=MONGO_URL, port=MONGO_PORT)
 dp = Dispatcher(bot, storage=storage)

@@ -38,8 +38,9 @@ class ApiClient(metaclass=Singleton):
     async def get_schedule(self, params: dict) -> dict:
         """
         Search schedule
+
         Args:
-            params: params will be passed to api request
+            params: will be passed to api request
                 https://github.com/thestd/schedule-API
         """
         return await self._make_request("schedule", params)
