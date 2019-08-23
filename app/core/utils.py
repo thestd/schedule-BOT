@@ -1,8 +1,13 @@
+from functools import wraps
 from typing import Union
 
+from aiogram import Dispatcher
+from aiogram.utils.exceptions import Throttled
 from aioredis import RedisConnection, create_connection
 
-from app.core.config import redis_url, redis_port, redis_db
+from app.core.config import REDIS_URL, REDIS_PORT, REDIS_DB
+
+__all__ = ["Singleton", "RedisCache"]
 
 
 class Singleton(type):
@@ -17,24 +22,24 @@ class Singleton(type):
 
 
 class RedisCache:
-    def __init__(self, url: str = redis_url, port: int = redis_port,
-                 db: int = redis_db):
+    def __init__(self, url: str = REDIS_URL, port: int = REDIS_PORT,
+                 db: int = REDIS_DB):
         self._url = url
         self._port = port
         self._db_id = db
-        self._db: Union[RedisConnection, None] = None
+        self._redis: Union[RedisConnection, None] = None
 
-    async def get_db(self) -> RedisConnection:
-        if not isinstance(self._db, RedisConnection):
-            self._db = await create_connection((self._url, self._port),
-                                               db=self._db_id)
+    async def _get_redis(self) -> RedisConnection:
+        if not isinstance(self._redis, RedisConnection):
+            self._redis = await create_connection((self._url, self._port),
+                                                  db=self._db_id)
 
-        return self._db
+        return self._redis
 
     async def get_value(self, key: str) -> Union[None, str]:
-        db = await self.get_db()
+        db = await self._get_redis()
         return await db.execute("get", key, encoding="utf-8")
 
     async def set_value(self, key: str, value: str, ex_time: int) -> None:
-        db = await self.get_db()
+        db = await self._get_redis()
         await db.execute("set", key, value, "EX", ex_time)

@@ -8,16 +8,16 @@ from app.modules.schedule.consts import query_for_search, week_days, \
     query_predict
 
 
-def query_type_view(query_type: str) -> str:
-    if query_type == "group":
+def query_type_request(query_type: str) -> str:
+    if query_type == "groups":
         return "Готово. Тепер відправ мені шфир (або частину шифру) своєї " \
                "групи:"
     else:
         return "Готово. Тепер відправ мені своє прізвище:"
 
 
-def query_view(query: str, query_type: str) -> (str,
-                                                types.InlineKeyboardMarkup):
+def schedule_view(query: str, query_type: str) -> (str,
+                                                   types.InlineKeyboardMarkup):
     text = f"<i>Розклад для {query}</i>"
     today = datetime.now()
     week_start_date = today - timedelta(days=today.weekday())
@@ -26,10 +26,10 @@ def query_view(query: str, query_type: str) -> (str,
                                       f"{today.weekday()}")
 
 
-def _generate_single_key(txt: str, week_start_date: str,
+def _generate_single_key(text: str, week_start_date: str,
                          day_number: str) -> types.InlineKeyboardButton:
     return types.InlineKeyboardButton(
-        txt,
+        text,
         callback_data=query_for_search.new(week_start_date, day_number)
     )
 
@@ -45,20 +45,31 @@ def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
     return text, markup
 
 
-async def generate_search_view(query: str, query_type: str, week_date: str,
-                               day_number: str) -> (
-        str, types.InlineKeyboardMarkup):
-    week_date = datetime.strptime(week_date, '%d.%m.%Y')
-    today = datetime.now()
-    today_week = today - timedelta(days=today.weekday())
-    prev_week = (week_date - timedelta(days=7)).strftime("%d.%m.%Y")
-    next_week = (week_date + timedelta(days=7)).strftime("%d.%m.%Y")
-    requested_day = (week_date + timedelta(days=int(day_number))).strftime(
-        "%d.%m.%Y")
-    res = await api_client.get_schedule({query_type: query,
-                                         "date_from": requested_day})
-    text = f"{query} to {requested_day}\n{res}"
+async def generate_search_view(
+        query: str,
+        query_type: str,
+        requested_week: str,
+        day_number: str) -> (str, types.InlineKeyboardMarkup):
+    # Data for keys
+    requested_week = datetime.strptime(requested_week, '%d.%m.%Y')
+    curr_day = datetime.now()
+    curr_first_week_day = curr_day - timedelta(days=curr_day.weekday())
+    prev_week = (requested_week - timedelta(days=7)).strftime("%d.%m.%Y")
+    next_week = (requested_week + timedelta(days=7)).strftime("%d.%m.%Y")
+    requested_day = (
+            requested_week + timedelta(days=int(day_number))
+    ).strftime("%d.%m.%Y")
 
+    # Make API call
+    schedule_data = await api_client.get_schedule(
+        {
+            query_type: query,
+            "date_from": requested_day
+        }
+    )
+    text = f"{query} to {requested_day}\n{schedule_data}"
+
+    # Search keys
     days_markup = []
     for day in week_days:
         day_name = day
@@ -66,16 +77,21 @@ async def generate_search_view(query: str, query_type: str, week_date: str,
             day_name = emoji.emojize(":black_circle:")
 
         days_markup.append(
-            _generate_single_key(day_name, week_date.strftime("%d.%m.%Y"),
-                                 week_days[day])
+            _generate_single_key(
+                day_name,
+                requested_week.strftime("%d.%m.%Y"),
+                week_days[day]
+            )
         )
 
     markup = types.InlineKeyboardMarkup(row_width=7)
     markup.add(*days_markup)
     markup.add(
-        _generate_single_key("return to today",
-                             today_week.strftime("%d.%m.%Y"),
-                             f"{today.weekday()}")
+        _generate_single_key(
+            "return to today",
+            curr_first_week_day.strftime("%d.%m.%Y"),
+            f"{curr_day.weekday()}"
+        )
     )
     markup.add(
         _generate_single_key("Previous week", prev_week, day_number),

@@ -1,6 +1,9 @@
-from app.core.config import modules, base_app
+from app.core.config import modules, BASE_APP
 
 
-def load_modules():
+def module_loader():
+    """
+    Loads dispatcher from each app module
+    """
     for module in modules:
-        __import__(f"{base_app}.modules.{module}.dispatcher")
+        __import__(f"{BASE_APP}.modules.{module}.dispatcher")
