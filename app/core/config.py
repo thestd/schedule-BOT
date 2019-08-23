@@ -12,7 +12,7 @@ API_URL = os.environ.get("API_URL", "http://api.pnu-bot.pp.ua")
 
 BASE_APP = __package__.split('.')[0]
 
-MONGO_URL = "mongodb://root:example@localhost:27017"
+MONGO_URL = os.environ.get('MONGO_URL', "mongodb://root:example@localhost:27017")
 
 modules = [
     "base",

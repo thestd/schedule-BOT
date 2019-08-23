@@ -1,0 +1,8 @@
+.git
+.gitignore
+.idea/
+__pycache__/
+*.py[cod]
+*$py.class
+mongo_data/*
+docker-compose.yml
