@@ -9,7 +9,7 @@ from app.modules.schedule.consts import query_for_search, week_days, \
 
 
 def query_type_request(query_type: str) -> str:
-    if query_type == "groups":
+    if query_type == "group":
         return "Готово. Тепер відправ мені шфир (або частину шифру) своєї " \
                "групи:"
     else:

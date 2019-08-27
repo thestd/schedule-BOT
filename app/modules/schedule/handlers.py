@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified
 
-from app.core.misc import bot, api_client
+from app.core.misc import bot, api_client, dp
 from app.modules.schedule.state import ScheduleState
 from app.modules.schedule.views import query_type_request, \
     generate_search_view, generate_predict_view
@@ -79,7 +79,11 @@ async def confirm_predicted_query(query: types.CallbackQuery,
     await ScheduleState.schedule_search.set()
 
 
-# @dp.throttled(rate=.5)
+async def handler_throttled(message: types.CallbackQuery, **kwargs):
+    await message.answer("Wow. Easy easy)", show_alert=True)
+
+
+@dp.throttled(handler_throttled, rate=.5)
 async def search_query(query: types.CallbackQuery, callback_data: dict,
                        state: FSMContext):
     usr_data = await state.get_data()
