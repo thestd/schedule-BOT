@@ -1,5 +1,5 @@
 FROM python:3.7.4-alpine3.10 as base
-RUN apk add --no-cache build-base && apt install git
+RUN apk add --no-cache build-base git
 COPY ./requirements.txt /requirements.txt
 RUN pip3 install --target="/install" -r /requirements.txt
 
