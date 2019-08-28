@@ -3,6 +3,14 @@ import os
 TOKEN = os.environ.get("TOKEN", None)
 SKIP_UPDATES = bool(os.environ.get("SKIP_UPDATES", True))
 
+WEBHOOK_ENABLED = bool(os.environ.get("WEBHOOK_ENABLED", False))
+WEBHOOK_URL = os.environ.get("WEBHOOK_URL", None)
+WEBHOOK_SERVER = {
+    "host": os.environ.get("WEBHOOK_HOST", "0.0.0.0"),
+    "port": int(os.environ.get("WEBHOOK_PORT", 80)),
+    "webhook_path": os.environ.get("WEBHOOK_PATH", f"/{TOKEN}")
+}
+
 CACHE_TIME = int(os.environ.get("CACHE_TIME", 6 * 3600))
 REDIS_URL = os.environ.get("REDIS_URL", "localhost")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
