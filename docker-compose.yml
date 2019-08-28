@@ -4,21 +4,12 @@ services:
 
   mongo:
     image: mvertes/alpine-mongo
-    volumes:
-      - ./mongo_data:/data/db
-    ports:
-      - 27018:27017
 
   redis:
     image: redis:alpine
-    ports:
-      - 6400:6379
 
   bot:
     build: .
     restart: always
     env_file:
       - bot_config.env
-    links:
-      - redis:redis
-      - mongo:mongo
