@@ -33,7 +33,10 @@ class ApiClient(metaclass=Singleton):
         """
         Predicts name of group/teacher
         """
-        return await self._make_request(q_type, {"query": name})
+        # Just because `http://api.pnu-bot.pp.ua/api/groups?query=ІПЗ-41`
+        # Todo: fix Api url for name prediction `groups` -> `group` or some
+        #  else
+        return await self._make_request(f"{q_type}s", {"query": name})
 
     async def get_schedule(self, params: dict) -> dict:
         """
