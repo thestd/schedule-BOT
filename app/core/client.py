@@ -33,7 +33,7 @@ class ApiClient(metaclass=Singleton):
         """
         Predicts name of group/teacher
         """
-        # Just because `http://api.pnu-bot.pp.ua/api/groups?query=ІПЗ-41`
+        # Just because `groups?query=ІПЗ-41` instead `group?query=ІПЗ-41`
         # Todo: fix Api url for name prediction `groups` -> `group` or some
         #  else
         return await self._make_request(f"{q_type}s", {"query": name})

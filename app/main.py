@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
 
-from app.core.config import WEBHOOK_URL, WEBHOOK_ENABLED, \
+from app.core.config import WEBHOOK_URL, WEBHOOK_ENABLE, \
     WEBHOOK_SERVER
 from app.core.helper import module_loader
 
@@ -30,7 +30,7 @@ def run():
     runner.on_startup(startup_webhook, polling=False, webhook=True)
     runner.on_shutdown(shutdown_webhook, polling=False, webhook=True)
 
-    if WEBHOOK_ENABLED:
+    if WEBHOOK_ENABLE:
         runner.start_webhook(**WEBHOOK_SERVER)
     else:
         runner.start_polling()

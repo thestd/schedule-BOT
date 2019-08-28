@@ -98,7 +98,8 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
             text=text,
             chat_id=query.message.chat.id,
             message_id=query.message.message_id,
-            reply_markup=markup
+            reply_markup=markup,
+            parse_mode="HTML"
         )
     except MessageNotModified:
         pass

@@ -4,8 +4,8 @@ from aiogram import types
 from aiogram.utils import emoji
 
 from app.core.misc import api_client
-from app.modules.schedule.consts import query_for_search, week_days, \
-    query_predict
+from app.modules.schedule.consts import query_for_search, week_days_btn, \
+    query_predict, week_days_full_name
 
 
 def query_type_request(query_type: str) -> str:
@@ -14,16 +14,6 @@ def query_type_request(query_type: str) -> str:
                "групи:"
     else:
         return "Готово. Тепер відправ мені своє прізвище:"
-
-
-def schedule_view(query: str, query_type: str) -> (str,
-                                                   types.InlineKeyboardMarkup):
-    text = f"<i>Розклад для {query}</i>"
-    today = datetime.now()
-    week_start_date = today - timedelta(days=today.weekday())
-    return text, generate_search_view(query, query_type,
-                                      week_start_date.strftime("%d.%m.%Y"),
-                                      f"{today.weekday()}")
 
 
 def _generate_single_key(text: str, week_start_date: str,
@@ -43,6 +33,30 @@ def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
             callback_data=query_predict.new(elem))
         )
     return text, markup
+
+
+async def _generate_schedule_text(query: str,
+                                  requested_day: str,
+                                  schedule_data: dict,
+                                  day_number: str) -> str:
+    header = (f"<strong>Розклад на {requested_day}"
+              f" ({week_days_full_name[int(day_number)]})\n"
+              f"{query}</strong>\n")
+    lessons = schedule_data["schedule"]
+    if not lessons:
+        body = "<strong>Вітаю, в тебе сьогодні вихідний!!</strong>"
+    else:
+        stack = []
+        for lesson in lessons:
+            for detail in lesson["items"]:
+                stack.append(
+                    (
+                        f"{detail['number']} пара ({detail['time_bounds']})\n"
+                        f"{detail['info']}"
+                    )
+                )
+        body = "\n\n".join(stack)
+    return f"{header}\n{body}"
 
 
 async def generate_search_view(
@@ -67,20 +81,21 @@ async def generate_search_view(
             "date_from": requested_day
         }
     )
-    text = f"{query} to {requested_day}\n{schedule_data}"
+    text = await _generate_schedule_text(query, requested_day, schedule_data,
+                                         day_number)
 
     # Search keys
     days_markup = []
-    for day in week_days:
+    for day in week_days_btn:
         day_name = day
-        if week_days[day] == int(day_number):
+        if week_days_btn[day] == int(day_number):
             day_name = emoji.emojize(":black_circle:")
 
         days_markup.append(
             _generate_single_key(
                 day_name,
                 requested_week.strftime("%d.%m.%Y"),
-                week_days[day]
+                week_days_btn[day]
             )
         )
 
