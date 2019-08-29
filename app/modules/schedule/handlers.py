@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.callback_data import CallbackData
 from aiogram.utils.exceptions import MessageNotModified
 
 from app.api_client.exceptions import ServiceNotResponse

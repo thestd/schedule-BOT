@@ -15,22 +15,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
     Start conversation
     """
     await bot.delete_message(message.chat.id, message.message_id)
-
-    # About
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=about_text,
-        parse_mode='HTML'
-    )
-
-    # Help
-    await bot.send_message(
-        chat_id=message.chat.id,
-        text=help_text,
-        parse_mode='HTML'
-    )
-
-    # Start
     await bot.send_message(
         chat_id=message.chat.id,
         text=welcome_text,
@@ -38,8 +22,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
         parse_mode='HTML'
     )
     await state.update_data(
-        message.from_user.to_python(),
-        msg_to_edit=message.message_id
+        message.from_user.to_python()
     )
     await ScheduleState.query_type_register.set()
 
