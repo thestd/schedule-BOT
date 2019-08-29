@@ -1,0 +1,2 @@
+class ServiceNotResponse(ConnectionError):
+    pass

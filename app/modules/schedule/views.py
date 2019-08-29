@@ -1,19 +1,20 @@
 from datetime import datetime, timedelta
 
 from aiogram import types
+from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils import emoji
 
+from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import api_client
 from app.modules.schedule.consts import query_for_search, week_days_btn, \
     query_predict, week_days_full_name
+from app.modules.schedule.templates import student_welcome, teacher_welcome, \
+    error_text, today_text, next_week_text, previous_week_text, \
+    no_lessons_text, find_query, manual_date_entry
 
 
 def query_type_request(query_type: str) -> str:
-    if query_type == "group":
-        return "Готово. Тепер відправ мені шфир (або частину шифру) своєї " \
-               "групи:"
-    else:
-        return "Готово. Тепер відправ мені своє прізвище:"
+    return student_welcome if query_type == "group" else teacher_welcome
 
 
 def _generate_single_key(text: str, week_start_date: str,
@@ -25,14 +26,13 @@ def _generate_single_key(text: str, week_start_date: str,
 
 
 def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
-    text = "Ось що вдалося знайти:"
     markup = types.InlineKeyboardMarkup()
     for elem in values:
         markup.add(types.InlineKeyboardButton(
             elem,
             callback_data=query_predict.new(elem))
         )
-    return text, markup
+    return find_query, markup
 
 
 async def _generate_schedule_text(query: str,
@@ -44,14 +44,15 @@ async def _generate_schedule_text(query: str,
               f"{query}</strong>\n")
     lessons = schedule_data["schedule"]
     if not lessons:
-        body = "<strong>Вітаю, в тебе сьогодні вихідний!!</strong>"
+        body = no_lessons_text
     else:
         stack = []
         for lesson in lessons:
             for detail in lesson["items"]:
                 stack.append(
                     (
-                        f"{detail['number']} пара ({detail['time_bounds']})\n"
+                        f"<i>{detail['number']} пара "
+                        f"({detail['time_bounds']})</i>\n"
                         f"{detail['info']}"
                     )
                 )
@@ -74,13 +75,16 @@ async def generate_search_view(
             requested_week + timedelta(days=int(day_number))
     ).strftime("%d.%m.%Y")
 
-    # Make API call
-    schedule_data = await api_client.get_schedule(
-        {
-            query_type: query,
-            "date_from": requested_day
-        }
-    )
+    try:
+        # Make API call
+        schedule_data = await api_client.get_schedule(
+            {
+                query_type: query,
+                "date_from": requested_day
+            }
+        )
+    except ServiceNotResponse:
+        return error_text, None
     text = await _generate_schedule_text(query, requested_day, schedule_data,
                                          day_number)
 
@@ -103,14 +107,20 @@ async def generate_search_view(
     markup.add(*days_markup)
     markup.add(
         _generate_single_key(
-            "return to today",
+            today_text,
             curr_first_week_day.strftime("%d.%m.%Y"),
             f"{curr_day.weekday()}"
         )
     )
     markup.add(
-        _generate_single_key("Previous week", prev_week, day_number),
-        _generate_single_key("Next week", next_week, day_number),
+        _generate_single_key(previous_week_text, prev_week, day_number),
+        _generate_single_key(next_week_text, next_week, day_number),
+    )
+    markup.add(
+        types.InlineKeyboardButton(
+            manual_date_entry,
+            callback_data="manual_data"
+        )
     )
 
     return text, markup

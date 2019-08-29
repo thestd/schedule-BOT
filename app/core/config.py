@@ -1,9 +1,9 @@
 import os
 
 TOKEN = os.environ.get("TOKEN", None)
-SKIP_UPDATES = bool(os.environ.get("SKIP_UPDATES", True))
+SKIP_UPDATES = int(os.environ.get("SKIP_UPDATES", 1))
 
-WEBHOOK_ENABLE = bool(os.environ.get("WEBHOOK_ENABLE", False))
+WEBHOOK_ENABLE = int(os.environ.get("WEBHOOK_ENABLE", 0))
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", None)
 WEBHOOK_SERVER = {
     "host": os.environ.get("WEBHOOK_HOST", "0.0.0.0"),

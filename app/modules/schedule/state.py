@@ -8,3 +8,4 @@ class ScheduleState(StatesGroup):
     query_register = State()
     confirm_predicted_query = State()
     schedule_search = State()
+    manual_date = State()

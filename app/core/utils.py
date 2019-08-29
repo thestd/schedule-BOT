@@ -1,8 +1,5 @@
-from functools import wraps
 from typing import Union
 
-from aiogram import Dispatcher
-from aiogram.utils.exceptions import Throttled
 from aioredis import RedisConnection, create_connection
 
 from app.core.config import REDIS_URL, REDIS_PORT, REDIS_DB

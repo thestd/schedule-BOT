@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.mongo import MongoStorage
 from aiogram.utils.executor import Executor
 
-from app.core.client import ApiClient
+from app.api_client.base import ApiClient
 from app.core.config import TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES
 from app.core.utils import RedisCache
 
