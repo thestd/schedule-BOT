@@ -1,2 +1,0 @@
-class ServiceNotResponse(ConnectionError):
-    pass

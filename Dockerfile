@@ -11,6 +11,6 @@ COPY --from=base /install/ /usr/lib/python3.7/site-packages/
 RUN mkdir /app
 WORKDIR /app
 COPY ./ ./
-ENTRYPOINT ["python3", "manage.py", "run"]
+ENTRYPOINT ["python3", "bot.py"]
 
 
