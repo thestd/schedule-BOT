@@ -16,8 +16,7 @@ from aiogram.utils import emoji
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from datetime import datetime, timedelta
-# TOKEN = os.environ.get("TOKEN", None)
-TOKEN='337899850:AAE1zz39Kp3XJVTXeYNg1CHu_Eqeojjcqfo'
+TOKEN = os.environ.get("TOKEN", None)
 SKIP_UPDATES = int(os.environ.get("SKIP_UPDATES", 1))
 WEBHOOK_ENABLE = 0
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", None)
