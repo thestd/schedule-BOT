@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageNotModified
+from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound
 
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import bot, api_client, dp
@@ -113,7 +113,7 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
             reply_markup=markup,
             parse_mode="HTML"
         )
-    except MessageNotModified:
+    except (MessageNotModified, MessageToEditNotFound):
         pass
     finally:
         await query.answer()
