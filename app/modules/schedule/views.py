@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 from aiogram import types
-from aiogram.types import ReplyKeyboardMarkup
 from aiogram.utils import emoji
 
 from app.api_client.exceptions import ServiceNotResponse

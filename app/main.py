@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Dispatcher
 
 from app.core.config import WEBHOOK_URL, WEBHOOK_ENABLE, \
@@ -24,6 +26,9 @@ async def startup_polling(dp: Dispatcher):
 
 
 def run():
+    logging.basicConfig(
+        level=logging.INFO
+    )
     module_loader()
     runner.on_startup(startup_polling, polling=True, webhook=False)
     runner.on_shutdown(shutdown_polling, polling=True, webhook=False)
