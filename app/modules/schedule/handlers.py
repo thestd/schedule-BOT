@@ -13,7 +13,8 @@ from app.modules.schedule.views import query_type_request, \
     generate_search_view, generate_predict_view
 
 __all__ = ["query_register", "query_type_register", "search_query",
-           "confirm_predicted_query", "manual_data_request"]
+           "confirm_predicted_query", "manual_date_request",
+           "manual_date_response"]
 
 
 async def query_type_register(query: types.CallbackQuery, callback_data: dict,
@@ -119,7 +120,7 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
         await query.answer()
 
 
-async def manual_data_request(callback_data: dict):
+async def manual_date_request(callback_data: dict):
     await bot.delete_message(
         callback_data["message"]["chat"]["id"],
         callback_data["message"]["message_id"]
@@ -132,7 +133,7 @@ async def manual_data_request(callback_data: dict):
     await ScheduleState.manual_date.set()
 
 
-async def manual_data_response(message: types.Message, state: FSMContext):
+async def manual_date_response(message: types.Message, state: FSMContext):
     await bot.delete_message(
         message.chat.id,
         message.message_id
