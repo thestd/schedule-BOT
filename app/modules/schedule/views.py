@@ -122,7 +122,7 @@ async def generate_search_view(
     markup.add(
         types.InlineKeyboardButton(
             manual_date_entry,
-            callback_data="manual_data"
+            callback_data="manual_date"
         )
     )
 

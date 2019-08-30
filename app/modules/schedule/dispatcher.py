@@ -23,7 +23,7 @@ dp.register_callback_query_handler(
 )
 dp.register_callback_query_handler(
     manual_date_request,
-    lambda c: c["data"] == "manual_data",
+    lambda c: c["data"] == "manual_date",
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
