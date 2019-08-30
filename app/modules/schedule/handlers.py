@@ -65,7 +65,6 @@ async def query_register(message: types.Message, state: FSMContext):
         await bot.send_message(
             text=cant_find_query,
             chat_id=message.chat.id,
-            reply_markup=types.ReplyKeyboardRemove(),
             parse_mode='HTML'
         )
 
