@@ -9,7 +9,7 @@ from app.modules.schedule.consts import query_for_search, week_days_btn, \
     query_predict, week_days_full_name
 from app.modules.schedule.templates import student_welcome, teacher_welcome, \
     error_text, today_text, next_week_text, previous_week_text, \
-    no_lessons_text, find_query, manual_date_entry
+    no_lessons_text, find_query, manual_date_entry, to_many_query_find
 
 
 def query_type_request(query_type: str) -> str:
@@ -26,12 +26,16 @@ def _generate_single_key(text: str, week_start_date: str,
 
 def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
     markup = types.InlineKeyboardMarkup()
+    text = find_query
+    if len(values) > 10:
+        values = values[:10]
+        text = to_many_query_find + find_query
     for elem in values:
         markup.add(types.InlineKeyboardButton(
             elem,
             callback_data=query_predict.new(elem))
         )
-    return find_query, markup
+    return text, markup
 
 
 async def _generate_schedule_text(query: str,

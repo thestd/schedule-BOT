@@ -30,3 +30,5 @@ runner = Executor(dp, skip_updates=SKIP_UPDATES)
 
 if MIX_PANEL_TOKEN:
     mp = Mixpanel(MIX_PANEL_TOKEN)
+else:
+    mp = None

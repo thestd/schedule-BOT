@@ -18,7 +18,7 @@ async def startup_webhook(dp: Dispatcher):
 
 
 async def shutdown_polling(dp: Dispatcher):
-    await dp.stop_polling()
+    dp.stop_polling()
 
 
 async def startup_polling(dp: Dispatcher):
