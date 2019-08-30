@@ -114,7 +114,14 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
             reply_markup=markup,
             parse_mode="HTML"
         )
-    except (MessageNotModified, MessageToEditNotFound):
+    except MessageToEditNotFound:
+        await bot.send_message(
+            text=text,
+            chat_id=query.message.chat.id,
+            reply_markup=markup,
+            parse_mode="HTML"
+        )
+    except MessageNotModified:
         pass
     finally:
         await query.answer()
