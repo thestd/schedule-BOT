@@ -1,3 +1,4 @@
+mixpanel
 git+https://github.com/aiogram/aiogram.git
 aiohttp==3.5.4
 aiomongo==0.1
