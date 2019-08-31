@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from aiogram import Dispatcher
 
@@ -28,7 +29,8 @@ async def startup_polling(dp: Dispatcher):
 def run():
     logging.basicConfig(
         level=logging.INFO,
-        format="[%(asctime)s] %(levelname)s - %(message)s"
+        format="[%(asctime)s] %(levelname)s - %(message)s",
+        filename=f"logs/{datetime.now().strftime('%d.%m.%Y-%H:%M')}.txt"
     )
     module_loader()
     runner.on_startup(startup_polling, polling=True, webhook=False)

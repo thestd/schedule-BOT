@@ -15,3 +15,5 @@ services:
     restart: always
     env_file:
       - bot_config.env
+    volumes:
+      - ./logs:/app/logs
