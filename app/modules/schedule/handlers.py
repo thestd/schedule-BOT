@@ -82,13 +82,16 @@ async def confirm_predicted_query(query: types.CallbackQuery,
         week_start_date.strftime("%d.%m.%Y"),
         str(curr_day.weekday())
     )
-    await bot.edit_message_text(
-        text=text,
-        chat_id=query.message.chat.id,
-        message_id=query.message.message_id,
-        reply_markup=markup,
-        parse_mode='HTML'
-    )
+    try:
+        await bot.edit_message_text(
+            text=text,
+            chat_id=query.message.chat.id,
+            message_id=query.message.message_id,
+            reply_markup=markup,
+            parse_mode='HTML'
+        )
+    except MessageNotModified:
+        pass
     await ScheduleState.schedule_search.set()
 
 
