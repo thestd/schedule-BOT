@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageCantBeDeleted
+from aiogram.utils.exceptions import MessageCantBeDeleted, \
+    MessageToDeleteNotFound
 
 from app.core.misc import bot
 from app.modules.base.templates import about_text, help_text, \
@@ -17,7 +18,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
     """
     try:
         await bot.delete_message(message.chat.id, message.message_id)
-    except MessageCantBeDeleted:
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
     await bot.send_message(
         chat_id=message.chat.id,
@@ -35,7 +36,10 @@ async def cmd_change_query(message: types.Message):
     """
     Change query type
     """
-    await bot.delete_message(message.chat.id, message.message_id)
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
+        pass
     await bot.send_message(
         chat_id=message.chat.id,
         text=change_query_text,
@@ -49,7 +53,10 @@ async def cmd_about(message: types.Message):
     """
     Info about bot
     """
-    await bot.delete_message(message.chat.id, message.message_id)
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
+        pass
     await bot.send_message(
         chat_id=message.chat.id,
         text=about_text,
@@ -61,7 +68,10 @@ async def cmd_help(message: types.Message):
     """
     Help with commands
     """
-    await bot.delete_message(message.chat.id, message.message_id)
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
+        pass
     await bot.send_message(
         chat_id=message.chat.id,
         text=help_text,

@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound
+from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, \
+    MessageCantBeDeleted, MessageToDeleteNotFound
 
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import bot, api_client, dp
@@ -131,10 +132,13 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
 
 
 async def manual_date_request(callback_data: dict):
-    await bot.delete_message(
-        callback_data["message"]["chat"]["id"],
-        callback_data["message"]["message_id"]
-    )
+    try:
+        await bot.delete_message(
+            callback_data["message"]["chat"]["id"],
+            callback_data["message"]["message_id"]
+        )
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
+        pass
     await bot.send_message(
         chat_id=callback_data["message"]["chat"]["id"],
         text=enter_date_text,
