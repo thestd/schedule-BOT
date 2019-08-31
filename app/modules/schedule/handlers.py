@@ -45,7 +45,10 @@ async def query_register(message: types.Message, state: FSMContext):
             message.text
         )
     except ServiceNotResponse:
-        await bot.delete_message(message.chat.id, message.message_id)
+        try:
+            await bot.delete_message(message.chat.id, message.message_id)
+        except (MessageCantBeDeleted, MessageToDeleteNotFound):
+            pass
         await bot.send_message(
             text=error_text,
             chat_id=message.chat.id,
@@ -53,7 +56,10 @@ async def query_register(message: types.Message, state: FSMContext):
         )
         return
 
-    await bot.delete_message(message.chat.id, message.message_id)
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
+        pass
     if values:
         text, markup = generate_predict_view(values)
         await bot.send_message(
@@ -148,10 +154,13 @@ async def manual_date_request(callback_data: dict):
 
 
 async def manual_date_response(message: types.Message, state: FSMContext):
-    await bot.delete_message(
-        message.chat.id,
-        message.message_id
-    )
+    try:
+        await bot.delete_message(
+            message.chat.id,
+            message.message_id
+        )
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
+        pass
     try:
         date = datetime.strptime(message.text, "%d.%m.%Y")
     except ValueError:

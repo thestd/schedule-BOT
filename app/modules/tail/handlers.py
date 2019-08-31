@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageCantBeDeleted
+from aiogram.utils.exceptions import MessageCantBeDeleted, \
+    MessageToDeleteNotFound
 
 from app.core.misc import bot
 from app.modules.base.handlers import cmd_start
@@ -20,7 +21,7 @@ async def invalid_msg(message: types.Message, state: FSMContext):
         return
     try:
         await bot.delete_message(message.chat.id, message.message_id)
-    except MessageCantBeDeleted:
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
 
 
@@ -41,5 +42,5 @@ async def invalid_clb_data(query: types.CallbackQuery, state: FSMContext):
             query.message.chat.id,
             query.message.message_id
         )
-    except MessageCantBeDeleted:
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
