@@ -22,7 +22,10 @@ class ApiClient(metaclass=Singleton):
         Raises:
             ServiceNotResponse:
         """
-        res = await self._cache.get_value(f"pred_type:{json.dumps(params)}")
+        try:
+            res = await self._cache.get_value(f"pred_type:{json.dumps(params)}")
+        except ConnectionRefusedError:
+            res = None
         if not res:
             async with self._session.get(
                     f"{self._api_url}/api/{pred_type}",
@@ -32,8 +35,11 @@ class ApiClient(metaclass=Singleton):
                     res = await resp.json()
                 else:
                     raise ServiceNotResponse(f"Code: {resp.status}")
-            await self._cache.set_value(f"pred_type:{json.dumps(params)}",
-                                        json.dumps(res), CACHE_TIME)
+            try:
+                await self._cache.set_value(f"pred_type:{json.dumps(params)}",
+                                            json.dumps(res), CACHE_TIME)
+            except ConnectionRefusedError:
+                pass
             return res
         else:
             return json.loads(res)
