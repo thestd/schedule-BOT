@@ -40,3 +40,7 @@ class RedisCache:
     async def set_value(self, key: str, value: str, ex_time: int) -> None:
         db = await self._get_redis()
         await db.execute("set", key, value, "EX", ex_time)
+
+    async def flush_database(self) -> None:
+        db = await self._get_redis()
+        await db.execute("flushall")

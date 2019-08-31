@@ -27,7 +27,8 @@ async def startup_polling(dp: Dispatcher):
 
 def run():
     logging.basicConfig(
-        level=logging.INFO
+        level=logging.INFO,
+        format="[%(asctime)s] %(levelname)s - %(message)s"
     )
     module_loader()
     runner.on_startup(startup_polling, polling=True, webhook=False)

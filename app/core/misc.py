@@ -20,7 +20,8 @@ uvloop.install()
 
 loop = asyncio.get_event_loop()
 
-api_client = ApiClient(RedisCache())
+redis_cache = RedisCache()
+api_client = ApiClient(redis_cache)
 
 bot = ClearBot(token=TOKEN, loop=loop)
 storage = MongoStorage(host=MONGO_URL, port=MONGO_PORT)

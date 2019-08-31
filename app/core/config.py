@@ -1,7 +1,7 @@
 import os
 
 TOKEN = os.environ.get("TOKEN", None)
-SKIP_UPDATES = int(os.environ.get("SKIP_UPDATES", 1))
+SKIP_UPDATES = int(os.environ.get("SKIP_UPDATES", 0))
 
 WEBHOOK_ENABLE = int(os.environ.get("WEBHOOK_ENABLE", 0))
 WEBHOOK_URL = os.environ.get("WEBHOOK_URL", None)
@@ -25,8 +25,11 @@ MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
 
 MIX_PANEL_TOKEN = os.environ.get("MIX_PANEL_TOKEN", None)
 
+ADMIN_IDS = [int(i) for i in os.environ.get("ADMIN_IDS", "").split()]
+
 modules = [
     "base",
+    "admin",
     "schedule",
     "tail"
 ]
