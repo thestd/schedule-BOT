@@ -1,5 +1,6 @@
 from aiogram import Bot, types
-from aiogram.utils.exceptions import MessageToDeleteNotFound
+from aiogram.utils.exceptions import MessageToDeleteNotFound, \
+    MessageCantBeDeleted
 
 import app.core.misc as misc
 
@@ -27,7 +28,7 @@ class ClearBot(Bot):
                     chat_id,
                     msg
                 )
-            except MessageToDeleteNotFound:
+            except (MessageCantBeDeleted, MessageToDeleteNotFound):
                 pass
 
         await misc.storage.update_data(

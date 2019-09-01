@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, \
-    MessageCantBeDeleted, MessageToDeleteNotFound
+    MessageCantBeDeleted, MessageToDeleteNotFound, ButtonDataInvalid
 
 from app.api_client.exceptions import ServiceNotResponse
-from app.core.misc import bot, api_client, dp
+from app.core.misc import bot, api_client, dp, logger
 from app.modules.schedule.templates import error_text, flood_text, \
     cant_find_query, enter_date_text, error_date_text
 from app.modules.schedule.state import ScheduleState
@@ -62,12 +62,15 @@ async def query_register(message: types.Message, state: FSMContext):
         pass
     if values:
         text, markup = generate_predict_view(values)
-        await bot.send_message(
-            text=text,
-            chat_id=message.chat.id,
-            reply_markup=markup,
-            parse_mode='HTML'
-        )
+        try:
+            await bot.send_message(
+                text=text,
+                chat_id=message.chat.id,
+                reply_markup=markup,
+                parse_mode='HTML'
+            )
+        except ButtonDataInvalid:
+            logger.error(f"Text: {text} Markup: {markup.as_json()}")
         await ScheduleState.confirm_predicted_query.set()
     else:
         await bot.send_message(
