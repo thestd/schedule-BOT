@@ -50,8 +50,8 @@ async def query_register(message: types.Message, state: FSMContext):
     except ServiceNotResponse:
         try:
             await bot.delete_message(message.chat.id, message.message_id)
-        except (MessageCantBeDeleted, MessageToDeleteNotFound):
-            pass
+        except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+            logger.error(f"{e}; Data {message}")
         await bot.send_message(
             text=error_text,
             chat_id=message.chat.id,
@@ -61,8 +61,8 @@ async def query_register(message: types.Message, state: FSMContext):
 
     try:
         await bot.delete_message(message.chat.id, message.message_id)
-    except (MessageCantBeDeleted, MessageToDeleteNotFound):
-        pass
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(f"{e}; Data {message}")
     if values:
         text, markup = generate_predict_view(values)
         try:
@@ -72,8 +72,11 @@ async def query_register(message: types.Message, state: FSMContext):
                 reply_markup=markup,
                 parse_mode='HTML'
             )
-        except ButtonDataInvalid:
-            logger.error(f"Text: {text} Markup: {markup.as_json()}")
+        except ButtonDataInvalid as e:
+            logger.error(
+                f"{e}; Data: {message}; Text: {text} "
+                f"Markup: {markup.as_json()}"
+            )
         await ScheduleState.confirm_predicted_query.set()
     else:
         await bot.send_message(
@@ -103,8 +106,8 @@ async def confirm_predicted_query(query: types.CallbackQuery,
             reply_markup=markup,
             parse_mode='HTML'
         )
-    except MessageNotModified:
-        pass
+    except MessageNotModified as e:
+        logger.error(f"{e}; Data: {query}")
     await ScheduleState.schedule_search.set()
 
 
@@ -149,8 +152,8 @@ async def manual_date_request(callback_data: dict):
             callback_data["message"]["chat"]["id"],
             callback_data["message"]["message_id"]
         )
-    except (MessageCantBeDeleted, MessageToDeleteNotFound):
-        pass
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(f"{e}; Data: {callback_data}")
     await bot.send_message(
         chat_id=callback_data["message"]["chat"]["id"],
         text=enter_date_text,
@@ -165,8 +168,8 @@ async def manual_date_response(message: types.Message, state: FSMContext):
             message.chat.id,
             message.message_id
         )
-    except (MessageCantBeDeleted, MessageToDeleteNotFound):
-        pass
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(f"{e}; Data: {message}")
     try:
         date = datetime.strptime(message.text, "%d.%m.%Y")
     except ValueError:
