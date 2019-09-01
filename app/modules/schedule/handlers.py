@@ -24,11 +24,14 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     Save query type (teacher, group)
     """
     q_type = callback_data["type"]
-    await bot.edit_message_text(
-        text=query_type_request(q_type),
-        chat_id=query.message.chat.id,
-        message_id=query.message.message_id
-    )
+    try:
+        await bot.edit_message_text(
+            text=query_type_request(q_type),
+            chat_id=query.message.chat.id,
+            message_id=query.message.message_id
+        )
+    except MessageNotModified as e:
+        logger.error(f"{e}. Data: {query}")
     await state.update_data(query_type=q_type)
     await ScheduleState.query_register.set()
 
