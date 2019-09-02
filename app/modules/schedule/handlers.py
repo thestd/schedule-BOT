@@ -133,6 +133,7 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
             reply_markup=markup,
             parse_mode="HTML"
         )
+        await query.answer()
     except MessageToEditNotFound:
         await bot.send_message(
             text=text,
@@ -142,8 +143,6 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
         )
     except MessageNotModified:
         pass
-    finally:
-        await query.answer()
 
 
 async def manual_date_request(callback_data: dict):
