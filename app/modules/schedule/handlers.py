@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -18,24 +19,31 @@ __all__ = ["query_register", "query_type_register", "search_query",
            "manual_date_response"]
 
 
+async def handler_throttled(message, **kwargs):
+    if isinstance(message, types.Message):
+        await bot.delete_message(message.chat.id, message.message_id)
+    elif isinstance(message, types.CallbackQuery):
+        await message.answer(flood_text, show_alert=True)
+
+
+@dp.throttled(handler_throttled, rate=.5)
 async def query_type_register(query: types.CallbackQuery, callback_data: dict,
                               state: FSMContext):
     """
     Save query type (teacher, group)
     """
-    q_type = callback_data["type"]
     try:
-        await bot.edit_message_text(
-            text=query_type_request(q_type),
+        await bot.send_message(
+            text=query_type_request(callback_data["type"]),
             chat_id=query.message.chat.id,
-            message_id=query.message.message_id
         )
     except MessageNotModified as e:
         logger.error(e, exc_info=True)
-    await state.update_data(query_type=q_type)
+    await state.update_data(query_type=callback_data["type"])
     await ScheduleState.query_register.set()
 
 
+@dp.throttled(handler_throttled, rate=.5)
 async def query_register(message: types.Message, state: FSMContext):
     """
     Save query (e.g. `ІПЗ-3`, `КН-41`)
@@ -83,10 +91,6 @@ async def query_register(message: types.Message, state: FSMContext):
         )
 
 
-async def handler_throttled(message: types.CallbackQuery, **kwargs):
-    await message.answer(flood_text, show_alert=True)
-
-
 @dp.throttled(handler_throttled, rate=.5)
 async def confirm_predicted_query(query: types.CallbackQuery,
                                   callback_data: dict, state: FSMContext):
@@ -101,10 +105,9 @@ async def confirm_predicted_query(query: types.CallbackQuery,
         str(curr_day.weekday())
     )
     try:
-        await bot.edit_message_text(
+        await bot.send_message(
             text=text,
             chat_id=query.message.chat.id,
-            message_id=query.message.message_id,
             reply_markup=markup,
             parse_mode='HTML'
         )
@@ -143,6 +146,7 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
         await query.answer()
 
 
+@dp.throttled(handler_throttled, rate=.5)
 async def manual_date_request(callback_data: dict):
     await bot.send_message(
         chat_id=callback_data["message"]["chat"]["id"],
@@ -152,6 +156,7 @@ async def manual_date_request(callback_data: dict):
     await ScheduleState.manual_date.set()
 
 
+@dp.throttled(handler_throttled, rate=.5)
 async def manual_date_response(message: types.Message, state: FSMContext):
     try:
         await bot.delete_message(
