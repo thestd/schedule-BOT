@@ -60,6 +60,7 @@ async def cmd_about(message: types.Message):
     await bot.send_message(
         chat_id=message.chat.id,
         text=about_text,
+        reply_markup=types.ReplyKeyboardRemove(),
         parse_mode='HTML'
     )
 
@@ -75,5 +76,6 @@ async def cmd_help(message: types.Message):
     await bot.send_message(
         chat_id=message.chat.id,
         text=help_text,
+        reply_markup=types.ReplyKeyboardRemove(),
         parse_mode='HTML'
     )

@@ -34,6 +34,7 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     try:
         await bot.send_message(
             text=query_type_request(callback_data["type"]),
+            reply_markup=types.ReplyKeyboardRemove(),
             chat_id=query.message.chat.id,
         )
     except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
@@ -63,6 +64,7 @@ async def query_register(message: types.Message, state: FSMContext):
             await bot.send_message(
                 text=error_text,
                 chat_id=message.chat.id,
+                reply_markup=types.ReplyKeyboardRemove(),
                 parse_mode='HTML'
             )
         except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
@@ -73,6 +75,7 @@ async def query_register(message: types.Message, state: FSMContext):
         await bot.delete_message(message.chat.id, message.message_id)
     except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
         logger.error(e, exc_info=True)
+
     if values:
         text, markup = generate_predict_view(values)
         try:
@@ -82,7 +85,7 @@ async def query_register(message: types.Message, state: FSMContext):
                 reply_markup=markup,
                 parse_mode='HTML'
             )
-        except ButtonDataInvalid as e:
+        except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
             logger.error(e, exc_info=True)
         await ScheduleState.confirm_predicted_query.set()
     else:
@@ -90,6 +93,7 @@ async def query_register(message: types.Message, state: FSMContext):
             await bot.send_message(
                 text=cant_find_query,
                 chat_id=message.chat.id,
+                reply_markup=types.ReplyKeyboardRemove(),
                 parse_mode='HTML'
             )
         except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
@@ -161,6 +165,7 @@ async def manual_date_request(callback_data: dict):
         await bot.send_message(
             chat_id=callback_data["message"]["chat"]["id"],
             text=enter_date_text,
+            reply_markup=types.ReplyKeyboardRemove(),
             parse_mode="Markdown"
         )
     except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
@@ -184,6 +189,7 @@ async def manual_date_response(message: types.Message, state: FSMContext):
             await bot.send_message(
                 chat_id=message.chat.id,
                 text=error_date_text,
+                reply_markup=types.ReplyKeyboardRemove(),
                 parse_mode="Markdown"
             )
         except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
