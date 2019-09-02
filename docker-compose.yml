@@ -2,6 +2,13 @@ version: '3'
 
 services:
 
+  mongo-express:
+    image: mongo-express
+    env_file:
+      - express_conf.env
+    ports:
+      - "8888:8081"
+
   mongo:
     image: mvertes/alpine-mongo
 

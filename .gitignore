@@ -7,3 +7,5 @@ __pycache__/
 mongo_data/
 local_settings.py
 bot_config.env
+express_conf.env
+logs/
