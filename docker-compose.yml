@@ -7,7 +7,7 @@ services:
     env_file:
       - express_conf.env
     ports:
-      - "8888:8081"
+      - "8999:8081"
 
   mongo:
     image: mvertes/alpine-mongo
