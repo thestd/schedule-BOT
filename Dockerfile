@@ -4,7 +4,7 @@ COPY ./requirements.txt /requirements.txt
 RUN pip3 install --target="/install" -r /requirements.txt
 
 
-FROM alpine:latest
+FROM alpine:3.10
 RUN apk add --no-cache python3
 ENV PYTHONUNBUFFERED 1
 COPY --from=base /install/ /usr/lib/python3.7/site-packages/
