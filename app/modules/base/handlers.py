@@ -20,6 +20,12 @@ async def cmd_start(message: types.Message, state: FSMContext):
         await bot.delete_message(message.chat.id, message.message_id)
     except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
+    # Delete old markups
+    await bot.send_message(
+        chat_id=message.chat.id,
+        text=".",
+        reply_markup=types.ReplyKeyboardRemove(),
+    )
     await bot.send_message(
         chat_id=message.chat.id,
         text=welcome_text,

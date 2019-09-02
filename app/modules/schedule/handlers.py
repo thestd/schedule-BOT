@@ -142,7 +142,7 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
             parse_mode="HTML"
         )
     except MessageNotModified:
-        pass
+        await query.answer()
 
 
 async def manual_date_request(callback_data: dict):
