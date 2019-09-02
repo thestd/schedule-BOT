@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+
+  mongo-express:
+    image: mongo-express
+    env_file:
+      - express_conf.env
+    ports:
+      - "8888:8081"
+
+  mongo:
+    image: mvertes/alpine-mongo
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  bot:
+    build: .
+    restart: always
+    env_file:
+      - bot_config.env
+    volumes:
+      - ./logs:/app/logs
