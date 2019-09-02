@@ -32,13 +32,10 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     """
     Save query type (teacher, group)
     """
-    try:
-        await bot.send_message(
-            text=query_type_request(callback_data["type"]),
-            chat_id=query.message.chat.id,
-        )
-    except MessageNotModified as e:
-        logger.error(e, exc_info=True)
+    await bot.send_message(
+        text=query_type_request(callback_data["type"]),
+        chat_id=query.message.chat.id,
+    )
     await state.update_data(query_type=callback_data["type"])
     await ScheduleState.query_register.set()
 
@@ -104,15 +101,12 @@ async def confirm_predicted_query(query: types.CallbackQuery,
         week_start_date.strftime("%d.%m.%Y"),
         str(curr_day.weekday())
     )
-    try:
-        await bot.send_message(
-            text=text,
-            chat_id=query.message.chat.id,
-            reply_markup=markup,
-            parse_mode='HTML'
-        )
-    except MessageNotModified as e:
-        logger.error(e, exc_info=True)
+    await bot.send_message(
+        text=text,
+        chat_id=query.message.chat.id,
+        reply_markup=markup,
+        parse_mode='HTML'
+    )
     await ScheduleState.schedule_search.set()
 
 
