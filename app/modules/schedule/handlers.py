@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from typing import Optional
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -32,10 +31,13 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     """
     Save query type (teacher, group)
     """
-    await bot.send_message(
-        text=query_type_request(callback_data["type"]),
-        chat_id=query.message.chat.id,
-    )
+    try:
+        await bot.send_message(
+            text=query_type_request(callback_data["type"]),
+            chat_id=query.message.chat.id,
+        )
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(e, exc_info=True)
     await state.update_data(query_type=callback_data["type"])
     await ScheduleState.query_register.set()
 
@@ -57,11 +59,14 @@ async def query_register(message: types.Message, state: FSMContext):
             await bot.delete_message(message.chat.id, message.message_id)
         except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
             logger.error(e, exc_info=True)
-        await bot.send_message(
-            text=error_text,
-            chat_id=message.chat.id,
-            parse_mode='HTML'
-        )
+        try:
+            await bot.send_message(
+                text=error_text,
+                chat_id=message.chat.id,
+                parse_mode='HTML'
+            )
+        except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+            logger.error(e, exc_info=True)
         return
 
     try:
@@ -81,11 +86,15 @@ async def query_register(message: types.Message, state: FSMContext):
             logger.error(e, exc_info=True)
         await ScheduleState.confirm_predicted_query.set()
     else:
-        await bot.send_message(
-            text=cant_find_query,
-            chat_id=message.chat.id,
-            parse_mode='HTML'
-        )
+        try:
+            await bot.send_message(
+                text=cant_find_query,
+                chat_id=message.chat.id,
+                parse_mode='HTML'
+            )
+        except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+            logger.error(e, exc_info=True)
+        return
 
 
 @dp.throttled(handler_throttled, rate=.5)
@@ -101,12 +110,15 @@ async def confirm_predicted_query(query: types.CallbackQuery,
         week_start_date.strftime("%d.%m.%Y"),
         str(curr_day.weekday())
     )
-    await bot.send_message(
-        text=text,
-        chat_id=query.message.chat.id,
-        reply_markup=markup,
-        parse_mode='HTML'
-    )
+    try:
+        await bot.send_message(
+            text=text,
+            chat_id=query.message.chat.id,
+            reply_markup=markup,
+            parse_mode='HTML'
+        )
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(e, exc_info=True)
     await ScheduleState.schedule_search.set()
 
 
@@ -130,23 +142,29 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
         )
         await query.answer()
     except MessageToEditNotFound:
-        await bot.send_message(
-            text=text,
-            chat_id=query.message.chat.id,
-            reply_markup=markup,
-            parse_mode="HTML"
-        )
+        try:
+            await bot.send_message(
+                text=text,
+                chat_id=query.message.chat.id,
+                reply_markup=markup,
+                parse_mode="HTML"
+            )
+        except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+            logger.error(e, exc_info=True)
     except MessageNotModified:
         await query.answer()
 
 
 @dp.throttled(handler_throttled, rate=.5)
 async def manual_date_request(callback_data: dict):
-    await bot.send_message(
-        chat_id=callback_data["message"]["chat"]["id"],
-        text=enter_date_text,
-        parse_mode="Markdown"
-    )
+    try:
+        await bot.send_message(
+            chat_id=callback_data["message"]["chat"]["id"],
+            text=enter_date_text,
+            parse_mode="Markdown"
+        )
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(e, exc_info=True)
     await ScheduleState.manual_date.set()
 
 
@@ -162,11 +180,14 @@ async def manual_date_response(message: types.Message, state: FSMContext):
     try:
         date = datetime.strptime(message.text, "%d.%m.%Y")
     except ValueError:
-        await bot.send_message(
-            chat_id=message.chat.id,
-            text=error_date_text,
-            parse_mode="Markdown"
-        )
+        try:
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text=error_date_text,
+                parse_mode="Markdown"
+            )
+        except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+            logger.error(e, exc_info=True)
         return
 
     curr_day = date
@@ -178,10 +199,13 @@ async def manual_date_response(message: types.Message, state: FSMContext):
         week_start_date.strftime("%d.%m.%Y"),
         str(curr_day.weekday())
     )
-    await bot.send_message(
-        text=text,
-        chat_id=message.chat.id,
-        reply_markup=markup,
-        parse_mode='HTML'
-    )
+    try:
+        await bot.send_message(
+            text=text,
+            chat_id=message.chat.id,
+            reply_markup=markup,
+            parse_mode='HTML'
+        )
+    except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
+        logger.error(e, exc_info=True)
     await ScheduleState.schedule_search.set()

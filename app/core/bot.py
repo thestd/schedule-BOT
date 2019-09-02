@@ -23,13 +23,10 @@ class ClearBot(Bot):
             return res
 
         for msg in usr_data["msg_to_delete"]:
-            try:
-                await self.delete_message(
-                    chat_id,
-                    msg
-                )
-            except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
-                misc.logger.error(e, exc_info=True)
+            await self.delete_message(
+                chat_id,
+                msg
+            )
 
         await misc.storage.update_data(
             chat=chat_id,
