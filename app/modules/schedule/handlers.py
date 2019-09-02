@@ -83,6 +83,11 @@ async def query_register(message: types.Message, state: FSMContext):
         )
 
 
+async def handler_throttled(message: types.CallbackQuery, **kwargs):
+    await message.answer(flood_text, show_alert=True)
+
+
+@dp.throttled(handler_throttled, rate=.5)
 async def confirm_predicted_query(query: types.CallbackQuery,
                                   callback_data: dict, state: FSMContext):
     await state.update_data(query=callback_data["query"])
@@ -106,10 +111,6 @@ async def confirm_predicted_query(query: types.CallbackQuery,
     except MessageNotModified as e:
         logger.error(e, exc_info=True)
     await ScheduleState.schedule_search.set()
-
-
-async def handler_throttled(message: types.CallbackQuery, **kwargs):
-    await message.answer(flood_text, show_alert=True)
 
 
 @dp.throttled(handler_throttled, rate=.5)
