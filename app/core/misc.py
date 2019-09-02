@@ -16,23 +16,20 @@ from app.core.utils import RedisCache
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
-# create file handler which logs even debug messages
-fh = logging.FileHandler("logs/bot.log")
-fh.setLevel(logging.INFO)
+file_handler = logging.FileHandler("logs/bot.log")
+file_handler.setLevel(logging.INFO)
 error_file_handle = logging.FileHandler("logs/bot_errors.log")
 error_file_handle.setLevel(logging.ERROR)
-# create console handler with a higher log level
-ch = logging.StreamHandler()
-ch.setLevel(logging.ERROR)
-# create formatter and add it to the handlers
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.ERROR)
 formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
-ch.setFormatter(formatter)
-fh.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
 error_file_handle.setFormatter(formatter)
-# add the handlers to logger
-logger.addHandler(ch)
-logger.addHandler(fh)
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 logger.addHandler(error_file_handle)
+
 # Just some tricks to speed-up bot
 uvloop.install()
 
