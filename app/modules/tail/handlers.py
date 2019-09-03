@@ -3,7 +3,6 @@ from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageCantBeDeleted, \
     MessageToDeleteNotFound
 
-from app.core.misc import bot
 from app.modules.base.handlers import cmd_start
 
 
@@ -12,15 +11,14 @@ async def invalid_msg(message: types.Message, state: FSMContext):
     usr_data = await state.get_data()
     if not usr_state or not usr_data:
         # Delete old markups
-        await bot.send_message(
-            chat_id=message.chat.id,
+        await message.answer(
             text=".",
             reply_markup=types.ReplyKeyboardRemove(),
         )
         await cmd_start(message, state)
         return
     try:
-        await bot.delete_message(message.chat.id, message.message_id)
+        await message.delete()
     except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
 
@@ -30,17 +28,13 @@ async def invalid_clb_data(query: types.CallbackQuery, state: FSMContext):
     usr_data = await state.get_data()
     if not usr_state or not usr_data:
         # Delete old markups
-        await bot.send_message(
-            chat_id=query.message.chat.id,
+        await query.message.answer(
             text=".",
             reply_markup=types.ReplyKeyboardRemove(),
         )
         await cmd_start(query.message, state)
         return
     try:
-        await bot.delete_message(
-            query.message.chat.id,
-            query.message.message_id
-        )
+        await query.message.delete()
     except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
