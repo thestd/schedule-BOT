@@ -70,15 +70,12 @@ async def query_register(message: types.Message, state: FSMContext):
         logger.error(e, exc_info=True)
     if values:
         text, markup = generate_predict_view(values)
-        try:
-            await bot.send_message(
-                text=text,
-                chat_id=message.chat.id,
-                reply_markup=markup,
-                parse_mode='HTML'
-            )
-        except ButtonDataInvalid as e:
-            logger.error(e, exc_info=True)
+        await bot.send_message(
+            text=text,
+            chat_id=message.chat.id,
+            reply_markup=markup,
+            parse_mode='HTML'
+        )
         await ScheduleState.confirm_predicted_query.set()
     else:
         await bot.send_message(
@@ -91,7 +88,12 @@ async def query_register(message: types.Message, state: FSMContext):
 @dp.throttled(handler_throttled, rate=.5)
 async def confirm_predicted_query(query: types.CallbackQuery,
                                   callback_data: dict, state: FSMContext):
-    await state.update_data(query=callback_data["query"])
+    idx = int(callback_data["query_type_idx"])
+
+    # Some magic with indexes (max size of call_back data is 64 bytes)
+    await state.update_data(
+        query=query.message.reply_markup.inline_keyboard[idx][0]["text"]
+    )
     usr_data = await state.get_data()
     curr_day = datetime.now()
     week_start_date = curr_day - timedelta(days=curr_day.weekday())

@@ -30,10 +30,10 @@ def generate_predict_view(values: list) -> (str, types.InlineKeyboardMarkup):
     if len(values) > 15:
         values = values[:15]
         text = to_many_query_find + find_query
-    for elem in values:
+    for idx, elem in enumerate(values):
         markup.add(types.InlineKeyboardButton(
             elem,
-            callback_data=query_predict.new(elem))
+            callback_data=query_predict.new(idx))
         )
     return text, markup
 
