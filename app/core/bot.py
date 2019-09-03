@@ -28,10 +28,8 @@ class ClearBot(Bot):
                     chat_id,
                     msg
                 )
-            except MessageCantBeDeleted:
+            except (MessageCantBeDeleted, MessageToDeleteNotFound):
                 pass
-            except MessageToDeleteNotFound as e:
-                misc.logger.error(e, exc_info=True)
 
         await misc.storage.update_data(
             chat=chat_id,
