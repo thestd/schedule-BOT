@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, \
-    MessageCantBeDeleted, MessageToDeleteNotFound, ButtonDataInvalid
+    MessageCantBeDeleted, MessageToDeleteNotFound, ButtonDataInvalid, \
+    InvalidQueryID
 
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import bot, api_client, dp, logger
@@ -128,7 +129,7 @@ async def search_query(query: types.CallbackQuery, callback_data: dict,
             parse_mode="HTML"
         )
         await query.answer()
-    except MessageToEditNotFound:
+    except (MessageToEditNotFound, InvalidQueryID):
         await bot.send_message(
             text=text,
             chat_id=query.message.chat.id,
