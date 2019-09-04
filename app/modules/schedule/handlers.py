@@ -7,11 +7,14 @@ from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, 
 
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import bot, api_client, dp, logger
+from app.core.utils import Date
+from app.modules.schedule.consts import week_days_btn
 from app.modules.schedule.templates import error_text, flood_text, \
-    cant_find_query, enter_date_text, error_date_text
+    cant_find_query, enter_date_text, error_date_text, next_week_text, \
+    previous_week_text, today_text
 from app.modules.schedule.state import ScheduleState
 from app.modules.schedule.views import query_type_request, \
-    generate_search_view, generate_predict_view
+    schedule_view, generate_predict_view
 
 __all__ = ["query_register", "query_type_register", "search_query",
            "confirm_predicted_query", "manual_date_request",
@@ -82,62 +85,75 @@ async def query_register(message: types.Message, state: FSMContext):
 
 
 @dp.throttled(handler_throttled, rate=.5)
-async def confirm_predicted_query(query: types.CallbackQuery,
-                                  callback_data: dict, state: FSMContext):
-    idx = int(callback_data["query_type_idx"])
-
-    # Some magic with indexes (max size of call_back data is 64 bytes)
+async def confirm_predicted_query(message: types.Message, state: FSMContext):
+    date = Date()
     await state.update_data(
-        query=query.message.reply_markup.inline_keyboard[idx][0]["text"]
+        query=message.text,
+        search_date=date.as_db_str
     )
     usr_data = await state.get_data()
-    curr_day = datetime.now()
-    week_start_date = curr_day - timedelta(days=curr_day.weekday())
-    text, markup = await generate_search_view(
+    text, markup = await schedule_view(
         usr_data["query"],
         usr_data["query_type"],
-        week_start_date.strftime("%d.%m.%Y"),
-        str(curr_day.weekday())
+        date
     )
-    await query.message.answer(
+    await message.answer(
         text=text,
         reply_markup=markup,
         parse_mode='HTML'
     )
     await ScheduleState.schedule_search.set()
+    await message.delete()
 
 
 @dp.throttled(handler_throttled, rate=.5)
-async def search_query(query: types.CallbackQuery, callback_data: dict,
-                       state: FSMContext):
+async def shift_date(message: types.Message, state: FSMContext):
     usr_data = await state.get_data()
-    text, markup = await generate_search_view(
+    date = Date(usr_data["search_date"])
+    if message.text == next_week_text:
+        date.shift_week(7)
+    elif message.text == previous_week_text:
+        date.shift_week(-7)
+    else:
+        date = Date()
+    await state.update_data(
+        search_date=date.as_db_str
+    )
+    text, markup = await schedule_view(
         usr_data["query"],
         usr_data["query_type"],
-        callback_data["week_date"],
-        callback_data["day_number"]
+        date
     )
-    try:
-        await query.message.edit_text(
-            text=text,
-            reply_markup=markup,
-            parse_mode="HTML"
-        )
-        await query.answer()
-    except (MessageToEditNotFound, InvalidQueryID):
-        await query.message.answer(
-            text=text,
-            reply_markup=markup,
-            parse_mode="HTML"
-        )
-    except MessageNotModified:
-        await query.answer()
+    await message.answer(
+        text=text,
+        reply_markup=markup,
+        parse_mode="HTML"
+    )
+    await message.delete()
 
 
 @dp.throttled(handler_throttled, rate=.5)
-async def manual_date_request(callback_data: dict):
-    await bot.send_message(
-        chat_id=callback_data["message"]["chat"]["id"],
+async def search_query(message: types.Message, state: FSMContext):
+    usr_data = await state.get_data()
+    date = Date(usr_data['search_date'])
+    date.day = week_days_btn[message.text]
+    text, markup = await schedule_view(
+        usr_data["query"],
+        usr_data["query_type"],
+        date
+    )
+    await message.answer(
+        text=text,
+        reply_markup=markup,
+        parse_mode="HTML"
+    )
+    await state.update_data(search_date=date.as_db_str)
+    await message.delete()
+
+
+@dp.throttled(handler_throttled, rate=.5)
+async def manual_date_request(message: types.Message):
+    await message.answer(
         text=enter_date_text,
         parse_mode="Markdown"
     )
@@ -155,20 +171,19 @@ async def manual_date_response(message: types.Message, state: FSMContext):
         )
         return
 
-    curr_day = date
-    week_start_date = curr_day - timedelta(days=curr_day.weekday())
     usr_data = await state.get_data()
-    text, markup = await generate_search_view(
+    s_date = Date(date)
+    text, markup = await schedule_view(
         usr_data["query"],
         usr_data["query_type"],
-        week_start_date.strftime("%d.%m.%Y"),
-        str(curr_day.weekday())
+        s_date
     )
     await message.answer(
         text=text,
         reply_markup=markup,
         parse_mode='HTML'
     )
+    await state.update_data(search_date=s_date.as_db_str)
     await ScheduleState.schedule_search.set()
     try:
         await message.delete()

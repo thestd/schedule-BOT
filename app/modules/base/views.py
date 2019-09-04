@@ -5,7 +5,7 @@ from app.modules.schedule.consts import query_type
 
 
 def query_type_markup() -> types.InlineKeyboardMarkup:
-    line_markup = types.InlineKeyboardMarkup(row_width=2)
+    line_markup = types.InlineKeyboardMarkup()
     line_markup.add(
         types.InlineKeyboardButton(
             choice_student_text,
