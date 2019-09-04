@@ -11,6 +11,7 @@ COPY --from=base /install/ /usr/lib/python3.7/site-packages/
 RUN mkdir /app
 WORKDIR /app
 COPY ./ ./
+VOLUME /app/logs
 ENTRYPOINT ["python3", "manage.py", "run"]
 
 
