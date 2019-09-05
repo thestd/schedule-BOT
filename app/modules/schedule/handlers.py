@@ -8,6 +8,7 @@ from aiogram.utils.exceptions import (MessageCantBeDeleted,
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import bot, api_client, dp, logger, mp
 from app.core.utils import Date
+from app.modules.base.templates import about_text, help_text
 from app.modules.schedule.consts import week_days_btn
 from app.modules.schedule.templates import error_text, flood_text, \
     cant_find_query, enter_date_text, error_date_text, next_week_text, \
@@ -36,7 +37,7 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     Save query type (teacher, group)
     """
     if mp:
-        mp.track(query.message.chat.id, f"query_type:{callback_data['type']}")
+        mp.track("query_type", f":{callback_data['type']}")
 
     await query.message.answer(
         text=query_type_request(callback_data["type"]),
@@ -91,7 +92,7 @@ async def query_register(message: types.Message, state: FSMContext):
 @dp.throttled(handler_throttled, rate=.5)
 async def confirm_predicted_query(message: types.Message, state: FSMContext):
     if mp:
-        mp.track(message.chat.id, f"query:{message.text}")
+        mp.track("query", {message.text})
 
     date = Date()
     await state.update_data(
@@ -148,7 +149,7 @@ async def shift_date(message: types.Message, state: FSMContext):
 @dp.throttled(handler_throttled, rate=.5)
 async def search_query(message: types.Message, state: FSMContext):
     if mp:
-        mp.track(message.chat.id, f"day:{message.text}")
+        mp.track("day", message.text)
 
     usr_data = await state.get_data()
     date = Date(usr_data['search_date'])
@@ -172,8 +173,11 @@ async def search_query(message: types.Message, state: FSMContext):
 
 @dp.throttled(handler_throttled, rate=.5)
 async def manual_date_request(message: types.Message):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
     await message.answer(
         text=enter_date_text,
+        reply_markup=markup,
         parse_mode="Markdown"
     )
     await ScheduleState.manual_date.set()
@@ -212,3 +216,46 @@ async def manual_date_response(message: types.Message, state: FSMContext):
         await message.delete()
     except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
         logger.error(e, exc_info=True)
+
+
+async def about_btn(message: types.Message, state: FSMContext):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
+    await message.answer(
+        text=about_text,
+        reply_markup=markup,
+        parse_mode='HTML'
+    )
+    await message.delete()
+
+
+async def help_btn(message: types.Message, state: FSMContext):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
+    await message.answer(
+        text=help_text,
+        reply_markup=markup,
+        parse_mode='HTML'
+    )
+    await message.delete()
+
+
+async def back_handler(query: types.CallbackQuery, state: FSMContext):
+    usr_data = await state.get_data()
+    date = Date(usr_data['search_date'])
+    text, markup = await schedule_view(
+        usr_data["query"],
+        usr_data["query_type"],
+        date
+    )
+    await query.message.answer(
+        text=text,
+        reply_markup=markup,
+        parse_mode="HTML"
+    )
+    await ScheduleState.schedule_search.set()
+    await state.update_data(search_date=date.as_db_str)
+    try:
+        await query.message.delete()
+    except MessageToDeleteNotFound:
+        pass

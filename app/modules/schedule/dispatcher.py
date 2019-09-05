@@ -3,8 +3,8 @@ from app.modules.base.handlers import cmd_change_query, cmd_help, cmd_about
 from app.modules.schedule.handlers import (
     query_type_register, query_register, search_query,
     confirm_predicted_query, manual_date_request, manual_date_response,
-    shift_date
-)
+    shift_date,
+    about_btn, back_handler, help_btn)
 from app.modules.schedule.consts import (
     query_type, week_days_btn, date_navigate_btn
 )
@@ -47,16 +47,21 @@ dp.register_message_handler(
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
-    cmd_help,
+    help_btn,
     lambda m: m.text == help_btn_text,
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
-    cmd_about,
+    about_btn,
     lambda m: m.text == about_btn_text,
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
     manual_date_response,
     state=ScheduleState.manual_date
+)
+dp.register_callback_query_handler(
+    back_handler,
+    lambda c: c.data == "back",
+    state="*"
 )

@@ -16,6 +16,6 @@ class StatisticMiddleware(BaseMiddleware):
             )
         if mp:
             try:
-                mp.track(update.update_id, "update_count")
+                mp.track("update", )
             except Exception as e:
                 logger.error(e)
