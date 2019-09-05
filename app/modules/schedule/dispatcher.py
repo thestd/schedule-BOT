@@ -1,11 +1,17 @@
 from app.core.misc import dp
 from app.modules.base.handlers import cmd_change_query, cmd_help, cmd_about
-from app.modules.schedule.handlers import query_type_register, \
-    query_register, search_query, confirm_predicted_query, \
-    manual_date_request, manual_date_response, shift_date
-from app.modules.schedule.consts import query_type, query_for_search, \
-    query_predict, week_days_btn, date_navigate_btn
+from app.modules.schedule.handlers import (
+    query_type_register, query_register, search_query,
+    confirm_predicted_query, manual_date_request, manual_date_response,
+    shift_date
+)
+from app.modules.schedule.consts import (
+    query_type, week_days_btn, date_navigate_btn
+)
 from app.modules.schedule.state import ScheduleState
+from app.modules.schedule.templates import (
+    manual_date_btn_entry, change_query_btn_text, help_btn_text, about_btn_text
+)
 
 dp.register_callback_query_handler(
     query_type_register,
@@ -22,7 +28,7 @@ dp.register_message_handler(
 )
 dp.register_message_handler(
     manual_date_request,
-    lambda c: c.text == "Ввести дату вручну",
+    lambda c: c.text == manual_date_btn_entry,
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
@@ -37,17 +43,17 @@ dp.register_message_handler(
 )
 dp.register_message_handler(
     cmd_change_query,
-    lambda m: m.text == "Змінити запит",
+    lambda m: m.text == change_query_btn_text,
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
     cmd_help,
-    lambda m: m.text == "Допомога",
+    lambda m: m.text == help_btn_text,
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(
     cmd_about,
-    lambda m: m.text == "Про бота",
+    lambda m: m.text == about_btn_text,
     state=ScheduleState.schedule_search
 )
 dp.register_message_handler(

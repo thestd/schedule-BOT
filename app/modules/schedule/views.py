@@ -4,11 +4,15 @@ from aiogram.utils import emoji
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import api_client
 from app.core.utils import Date
-from app.modules.schedule.consts import week_days_btn, query_predict, \
-    week_days_full_name
-from app.modules.schedule.templates import student_welcome, teacher_welcome, \
-    error_text, today_text, next_week_text, previous_week_text, \
-    no_lessons_text, find_query, manual_date_entry, to_many_query_find
+from app.modules.schedule.consts import (
+    week_days_btn, query_predict, week_days_full_name
+)
+from app.modules.schedule.templates import (
+    student_welcome, teacher_welcome, error_text, today_text,
+    next_week_text, previous_week_text, no_lessons_text, find_query,
+    manual_date_btn_entry, to_many_query_find,
+    help_btn_text, about_btn_text, change_query_btn_text
+)
 
 
 def query_type_request(query_type: str) -> str:
@@ -73,12 +77,12 @@ async def _get_schedule_markup(week_day: int) -> types.ReplyKeyboardMarkup:
         types.KeyboardButton(next_week_text),
     )
     markup.add(
-        types.KeyboardButton(manual_date_entry),
+        types.KeyboardButton(manual_date_btn_entry),
     )
     markup.add(
-        types.KeyboardButton("Змінити запит"),
-        types.KeyboardButton("Про бота"),
-        types.KeyboardButton("Допомога"),
+        types.KeyboardButton(change_query_btn_text),
+        types.KeyboardButton(about_btn_text),
+        types.KeyboardButton(help_btn_text),
     )
     return markup
 

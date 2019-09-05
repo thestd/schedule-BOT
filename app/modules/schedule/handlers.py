@@ -1,24 +1,25 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound, \
-    MessageCantBeDeleted, MessageToDeleteNotFound, InvalidQueryID
+from aiogram.utils.exceptions import (MessageCantBeDeleted,
+                                      MessageToDeleteNotFound)
 
 from app.api_client.exceptions import ServiceNotResponse
-from app.core.misc import bot, api_client, dp, logger
+from app.core.misc import bot, api_client, dp, logger, mp
 from app.core.utils import Date
 from app.modules.schedule.consts import week_days_btn
 from app.modules.schedule.templates import error_text, flood_text, \
     cant_find_query, enter_date_text, error_date_text, next_week_text, \
-    previous_week_text, today_text
+    previous_week_text
 from app.modules.schedule.state import ScheduleState
-from app.modules.schedule.views import query_type_request, \
-    schedule_view, generate_predict_view
+from app.modules.schedule.views import (
+    query_type_request, schedule_view, generate_predict_view
+)
 
 __all__ = ["query_register", "query_type_register", "search_query",
            "confirm_predicted_query", "manual_date_request",
-           "manual_date_response"]
+           "manual_date_response", "shift_date"]
 
 
 async def handler_throttled(message, **kwargs):
@@ -34,6 +35,9 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     """
     Save query type (teacher, group)
     """
+    if mp:
+        mp.track(query.message.chat.id, f"query_type:{callback_data['type']}")
+
     await query.message.answer(
         text=query_type_request(callback_data["type"]),
     )
@@ -86,6 +90,9 @@ async def query_register(message: types.Message, state: FSMContext):
 
 @dp.throttled(handler_throttled, rate=.5)
 async def confirm_predicted_query(message: types.Message, state: FSMContext):
+    if mp:
+        mp.track(message.chat.id, f"query:{message.text}")
+
     date = Date()
     await state.update_data(
         query=message.text,
@@ -103,7 +110,10 @@ async def confirm_predicted_query(message: types.Message, state: FSMContext):
         parse_mode='HTML'
     )
     await ScheduleState.schedule_search.set()
-    await message.delete()
+    try:
+        await message.delete()
+    except MessageToDeleteNotFound:
+        pass
 
 
 @dp.throttled(handler_throttled, rate=.5)
@@ -129,11 +139,17 @@ async def shift_date(message: types.Message, state: FSMContext):
         reply_markup=markup,
         parse_mode="HTML"
     )
-    await message.delete()
+    try:
+        await message.delete()
+    except MessageToDeleteNotFound:
+        pass
 
 
 @dp.throttled(handler_throttled, rate=.5)
 async def search_query(message: types.Message, state: FSMContext):
+    if mp:
+        mp.track(message.chat.id, f"day:{message.text}")
+
     usr_data = await state.get_data()
     date = Date(usr_data['search_date'])
     date.day = week_days_btn[message.text]
@@ -148,7 +164,10 @@ async def search_query(message: types.Message, state: FSMContext):
         parse_mode="HTML"
     )
     await state.update_data(search_date=date.as_db_str)
-    await message.delete()
+    try:
+        await message.delete()
+    except MessageToDeleteNotFound:
+        pass
 
 
 @dp.throttled(handler_throttled, rate=.5)
@@ -158,6 +177,10 @@ async def manual_date_request(message: types.Message):
         parse_mode="Markdown"
     )
     await ScheduleState.manual_date.set()
+    try:
+        await message.delete()
+    except MessageToDeleteNotFound:
+        pass
 
 
 @dp.throttled(handler_throttled, rate=.5)

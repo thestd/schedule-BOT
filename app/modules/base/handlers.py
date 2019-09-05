@@ -1,10 +1,12 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageCantBeDeleted, \
-    MessageToDeleteNotFound
+from aiogram.utils.exceptions import (
+    MessageCantBeDeleted, MessageToDeleteNotFound
+)
 
-from app.modules.base.templates import about_text, help_text, \
-    change_query_text, welcome_text
+from app.modules.base.templates import (
+    about_text, help_text, change_query_text, welcome_text
+)
 from app.modules.base.views import query_type_markup
 from app.modules.schedule.state import ScheduleState
 

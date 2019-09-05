@@ -1,7 +1,8 @@
 from aiogram.utils.callback_data import CallbackData
 
-from app.modules.schedule.templates import next_week_text, previous_week_text, \
-    today_text
+from app.modules.schedule.templates import (
+    next_week_text, previous_week_text, today_text
+)
 
 query_type = CallbackData("q_type", "type")
 query_for_search = CallbackData("search", "week_date", "day_number")

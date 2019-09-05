@@ -5,7 +5,7 @@ from aioredis import RedisConnection, create_connection
 
 from app.core.config import REDIS_URL, REDIS_PORT, REDIS_DB
 
-__all__ = ["Singleton", "RedisCache"]
+__all__ = ["Singleton", "RedisCache", "Date"]
 
 
 class Singleton(type):
@@ -20,6 +20,8 @@ class Singleton(type):
 
 
 class RedisCache:
+    __slots__ = ("_url", "_port", "_db_id", "_redis",)
+
     def __init__(self, url: str = REDIS_URL, port: int = REDIS_PORT,
                  db: int = REDIS_DB):
         self._url = url

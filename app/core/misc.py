@@ -9,8 +9,9 @@ from mixpanel import Mixpanel
 
 from app.api_client.base import ApiClient
 from app.core.bot import ClearBot
-from app.core.config import TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES, \
-    MIX_PANEL_TOKEN
+from app.core.config import (
+    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES, MIX_PANEL_TOKEN
+)
 from app.core.utils import RedisCache
 
 logger = logging.getLogger(__name__)
