@@ -6,7 +6,7 @@ from aiogram.utils.exceptions import (MessageCantBeDeleted,
                                       MessageToDeleteNotFound)
 
 from app.api_client.exceptions import ServiceNotResponse
-from app.core.misc import bot, api_client, dp, logger, mp
+from app.core.misc import bot, api_client, dp, logger
 from app.core.utils import Date
 from app.modules.base.templates import about_text, help_text
 from app.modules.schedule.consts import week_days_btn
@@ -36,9 +36,6 @@ async def query_type_register(query: types.CallbackQuery, callback_data: dict,
     """
     Save query type (teacher, group)
     """
-    if mp:
-        mp.track("query_type", f":{callback_data['type']}")
-
     await query.message.answer(
         text=query_type_request(callback_data["type"]),
     )
@@ -91,9 +88,6 @@ async def query_register(message: types.Message, state: FSMContext):
 
 @dp.throttled(handler_throttled, rate=.5)
 async def confirm_predicted_query(message: types.Message, state: FSMContext):
-    if mp:
-        mp.track("query", {message.text})
-
     date = Date()
     await state.update_data(
         query=message.text,
@@ -148,9 +142,6 @@ async def shift_date(message: types.Message, state: FSMContext):
 
 @dp.throttled(handler_throttled, rate=.5)
 async def search_query(message: types.Message, state: FSMContext):
-    if mp:
-        mp.track("day", message.text)
-
     usr_data = await state.get_data()
     date = Date(usr_data['search_date'])
     date.day = week_days_btn[message.text]

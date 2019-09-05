@@ -5,12 +5,11 @@ import uvloop
 from aiogram import Dispatcher
 from aiogram.contrib.fsm_storage.mongo import MongoStorage
 from aiogram.utils.executor import Executor
-from mixpanel import Mixpanel
 
 from app.api_client.base import ApiClient
 from app.core.bot import ClearBot
 from app.core.config import (
-    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES, MIX_PANEL_TOKEN
+    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES
 )
 from app.core.utils import RedisCache
 
@@ -44,8 +43,3 @@ storage = MongoStorage(host=MONGO_URL, port=MONGO_PORT)
 dp = Dispatcher(bot, storage=storage)
 
 runner = Executor(dp, skip_updates=SKIP_UPDATES)
-
-if MIX_PANEL_TOKEN:
-    mp = Mixpanel(MIX_PANEL_TOKEN)
-else:
-    mp = None

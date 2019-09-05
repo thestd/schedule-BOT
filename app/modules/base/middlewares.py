@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher.middlewares import BaseMiddleware
 
-from app.core.misc import mp, logger
+from app.core.misc import logger
 
 
 class StatisticMiddleware(BaseMiddleware):
@@ -14,8 +14,3 @@ class StatisticMiddleware(BaseMiddleware):
             logger.info(
                 f"New update: {update.callback_query}"
             )
-        if mp:
-            try:
-                mp.track("update", )
-            except Exception as e:
-                logger.error(e)
