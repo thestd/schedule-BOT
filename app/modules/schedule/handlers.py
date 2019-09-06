@@ -210,7 +210,7 @@ async def manual_date_response(message: types.Message, state: FSMContext):
 
 async def back_handler(query: types.CallbackQuery, state: FSMContext):
     usr_data = await state.get_data()
-    date = Date(usr_data['search_date'])
+    date = Date(usr_data.get("search_date", None))
     text, markup = await schedule_view(
         usr_data["query"],
         usr_data["query_type"],
