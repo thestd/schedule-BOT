@@ -9,8 +9,4 @@ dp.register_callback_query_handler(
     old_callback,
     state=ScheduleState.schedule_search
 )
-dp.register_callback_query_handler(
-    old_callback,
-    state=ScheduleState.confirm_predicted_query
-)
 dp.register_callback_query_handler(invalid_clb_data, state='*')

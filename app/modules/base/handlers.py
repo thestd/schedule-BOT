@@ -48,13 +48,19 @@ async def cmd_change_query(message: types.Message):
         pass
 
 
-async def cmd_about(message: types.Message):
+async def cmd_about(message: types.Message, state: FSMContext):
     """
     Info about bot
     """
+    if await state.get_state() == ScheduleState.schedule_search.state:
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
+    else:
+        markup = None
+
     await message.answer(
         text=about_text,
-        reply_markup=types.ReplyKeyboardRemove(),
+        reply_markup=markup,
         parse_mode='HTML'
     )
     try:
@@ -63,13 +69,19 @@ async def cmd_about(message: types.Message):
         pass
 
 
-async def cmd_help(message: types.Message):
+async def cmd_help(message: types.Message, state: FSMContext):
     """
     Help with commands
     """
+    if await state.get_state() == ScheduleState.schedule_search.state:
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
+    else:
+        markup = None
+
     await message.answer(
         text=help_text,
-        reply_markup=types.ReplyKeyboardRemove(),
+        reply_markup=markup,
         parse_mode='HTML'
     )
     try:

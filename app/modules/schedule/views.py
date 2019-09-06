@@ -20,16 +20,14 @@ def query_type_request(query_type: str) -> str:
 
 
 def generate_predict_view(values: list) -> (str, types.ReplyKeyboardMarkup):
-    markup = types.ReplyKeyboardMarkup()
+    markup = types.ReplyKeyboardMarkup(row_width=2)
     text = find_query
-    if len(values) > 15:
-        values = values[:15]
+    if len(values) > 100:
+        values = values[:100]
         text = to_many_query_find + find_query
-    for idx, elem in enumerate(values):
-        markup.add(types.InlineKeyboardButton(
-            elem,
-            callback_data=query_predict.new(idx))
-        )
+    half = len(values)
+    markup.add(*[types.KeyboardButton(f) for f in values[:half]])
+    markup.add(*[types.KeyboardButton(f) for f in values[half:]])
     return text, markup
 
 
