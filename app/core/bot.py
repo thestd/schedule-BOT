@@ -1,6 +1,7 @@
 from aiogram import Bot, types
-from aiogram.utils.exceptions import MessageToDeleteNotFound, \
-    MessageCantBeDeleted
+from aiogram.utils.exceptions import (
+    MessageToDeleteNotFound, MessageCantBeDeleted
+)
 
 import app.core.misc as misc
 

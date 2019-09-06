@@ -1,10 +1,12 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageCantBeDeleted, \
-    MessageToDeleteNotFound
+from aiogram.utils.exceptions import (
+    MessageCantBeDeleted, MessageToDeleteNotFound
+)
 
-from app.modules.base.templates import about_text, help_text, \
-    change_query_text, welcome_text
+from app.modules.base.templates import (
+    about_text, help_text, change_query_text, welcome_text
+)
 from app.modules.base.views import query_type_markup
 from app.modules.schedule.state import ScheduleState
 
@@ -46,13 +48,19 @@ async def cmd_change_query(message: types.Message):
         pass
 
 
-async def cmd_about(message: types.Message):
+async def cmd_about(message: types.Message, state: FSMContext):
     """
     Info about bot
     """
+    if await state.get_state() == ScheduleState.schedule_search.state:
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
+    else:
+        markup = None
+
     await message.answer(
         text=about_text,
-        reply_markup=types.ReplyKeyboardRemove(),
+        reply_markup=markup,
         parse_mode='HTML'
     )
     try:
@@ -61,13 +69,19 @@ async def cmd_about(message: types.Message):
         pass
 
 
-async def cmd_help(message: types.Message):
+async def cmd_help(message: types.Message, state: FSMContext):
     """
     Help with commands
     """
+    if await state.get_state() == ScheduleState.schedule_search.state:
+        markup = types.InlineKeyboardMarkup()
+        markup.add(types.InlineKeyboardButton("Назад", callback_data="back"))
+    else:
+        markup = None
+
     await message.answer(
         text=help_text,
-        reply_markup=types.ReplyKeyboardRemove(),
+        reply_markup=markup,
         parse_mode='HTML'
     )
     try:

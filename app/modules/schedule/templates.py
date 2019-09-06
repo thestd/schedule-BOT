@@ -19,7 +19,10 @@ error_text = (
 today_text = "Сьогодні"
 next_week_text = "Наступний тиждень"
 previous_week_text = "Попередній тиждень"
-manual_date_entry = "Ввести дату вручну"
+manual_date_btn_entry = "Ввести дату вручну"
+change_query_btn_text = "Змінити запит"
+help_btn_text = "Допомога"
+about_btn_text = "Про бота"
 
 enter_date_text = (
     "Просто відправ мені дату в форматі"
@@ -34,7 +37,7 @@ error_date_text = (
 no_lessons_text = "Вітаю, в тебе сьогодні вихідний!"
 find_query = "Ось що вдалося знайти:"
 to_many_query_find = (
-    "Мені довелось обмежити кількість результатів до 15.\n"
+    "Мені довелось обмежити кількість результатів до 100.\n"
 )
 cant_find_query = "Нічого не вдалось знайти, спробуй ще раз"
 

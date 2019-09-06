@@ -23,8 +23,6 @@ BASE_APP = __package__.split('.')[0]
 MONGO_URL = os.environ.get("MONGO_URL", "localhost")
 MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
 
-MIX_PANEL_TOKEN = os.environ.get("MIX_PANEL_TOKEN", None)
-
 ADMIN_IDS = [int(i) for i in os.environ.get("ADMIN_IDS", "").split()]
 
 modules = [

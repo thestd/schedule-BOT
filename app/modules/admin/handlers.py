@@ -1,6 +1,7 @@
 from aiogram import types
-from aiogram.utils.exceptions import MessageCantBeDeleted, \
-    MessageToDeleteNotFound
+from aiogram.utils.exceptions import (
+    MessageCantBeDeleted, MessageToDeleteNotFound
+)
 
 from app.core.misc import storage, redis_cache
 from app.modules.admin.utils import admin_requires
