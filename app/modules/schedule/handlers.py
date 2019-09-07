@@ -142,7 +142,7 @@ async def shift_date(message: types.Message, state: FSMContext):
 @dp.throttled(handler_throttled, rate=.5)
 async def search_query(message: types.Message, state: FSMContext):
     usr_data = await state.get_data()
-    date = Date(usr_data['search_date'])
+    date = Date(usr_data.get("search_date", None))
     date.day = week_days_btn[message.text]
     text, markup = await schedule_view(
         usr_data["query"],
