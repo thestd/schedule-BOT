@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -66,38 +66,13 @@ async def query_register(message: types.Message, state: FSMContext):
         return
 
     if values:
-        if message.text in values:
-            date = Date()
-            await state.update_data(
-                query=message.text,
-                search_date=date.as_db_str
-            )
-            usr_data = await state.get_data()
-            values = await api_client.name_predict(
-                usr_data["query_type"],
-                message.text
-            )
-            if message.text not in values:
-                await query_register(message, state)
-                return
-            text, markup = await schedule_view(
-                usr_data["query"],
-                usr_data["query_type"],
-                date
-            )
-            await message.answer(
-                text=text,
-                reply_markup=markup,
-                parse_mode='HTML'
-            )
-            await ScheduleState.schedule_search.set()
-        else:
-            text, markup = generate_predict_view(values)
-            await message.answer(
-                text=text,
-                reply_markup=markup,
-                parse_mode='HTML'
-            )
+        text, markup = generate_predict_view(values)
+        await message.answer(
+            text=text,
+            reply_markup=markup,
+            parse_mode='HTML'
+        )
+        await ScheduleState.confirm_predicted_query.set()
     else:
         await message.answer(
             text=cant_find_query,
@@ -108,6 +83,30 @@ async def query_register(message: types.Message, state: FSMContext):
         await message.delete()
     except (MessageCantBeDeleted, MessageToDeleteNotFound) as e:
         logger.error(e, exc_info=True)
+
+
+@dp.throttled(handler_throttled, rate=.5)
+async def confirm_predicted_query(query: types.CallbackQuery,
+                                  callback_data: dict, state: FSMContext):
+    idx = int(callback_data["query_type_idx"])
+    date = Date()
+    # Some magic with indexes (max size of call_back data is 64 bytes)
+    await state.update_data(
+        query=query.message.reply_markup.inline_keyboard[idx][0]["text"],
+        search_date=date.as_db_str
+    )
+    usr_data = await state.get_data()
+    text, markup = await schedule_view(
+        usr_data["query"],
+        usr_data["query_type"],
+        Date()
+    )
+    await query.message.answer(
+        text=text,
+        reply_markup=markup,
+        parse_mode='HTML'
+    )
+    await ScheduleState.schedule_search.set()
 
 
 @dp.throttled(handler_throttled, rate=.5)
