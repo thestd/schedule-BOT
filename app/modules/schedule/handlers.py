@@ -225,5 +225,5 @@ async def back_handler(query: types.CallbackQuery, state: FSMContext):
     await state.update_data(search_date=date.as_db_str)
     try:
         await query.message.delete()
-    except MessageToDeleteNotFound:
+    except (MessageCantBeDeleted, MessageToDeleteNotFound):
         pass
