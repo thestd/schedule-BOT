@@ -114,6 +114,10 @@ async def query_register(message: types.Message, state: FSMContext):
 @dp.throttled(handler_throttled, rate=.5)
 async def shift_date(message: types.Message, state: FSMContext):
     usr_data = await state.get_data()
+    if "query" not in usr_data or "query_type" not in usr_data:
+        await cmd_start(message, state)
+        return
+
     date = Date(usr_data.get("search_date", None))
     if message.text == next_week_text:
         date.shift_week(7)
