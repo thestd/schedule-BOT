@@ -63,6 +63,8 @@ async def msg_to_users(message: types.Message, state: FSMContext):
     markup.add(
         types.InlineKeyboardButton("Видалити мене", callback_data="delete_me")
     )
+    sent_count = 0
+    err_count = 0
     for user in users_list:
         try:
             await message.bot.send_message(
@@ -71,8 +73,13 @@ async def msg_to_users(message: types.Message, state: FSMContext):
                 reply_markup=markup,
                 clear=True
             )
+            sent_count += 1
         except Exception as e:
+            err_count += 1
             logger.error(e, exc_info=True)
+    await message.answer(
+        f"Total send: {sent_count}\n Errors: {err_count}"
+    )
     try:
         await message.delete()
     except (MessageCantBeDeleted, MessageToDeleteNotFound):
