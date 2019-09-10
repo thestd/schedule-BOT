@@ -7,10 +7,13 @@ import app.core.misc as misc
 
 
 class ClearBot(Bot):
-    async def send_message(self, chat_id, *args,
+    async def send_message(self, chat_id, clear=False, *args,
                            **kwargs) -> types.Message:
         res = await super(ClearBot, self).send_message(chat_id, *args,
                                                        **kwargs)
+        if clear:
+            return res
+
         usr_data = await misc.storage.get_data(
             chat=chat_id,
             user=chat_id
