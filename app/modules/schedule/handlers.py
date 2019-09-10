@@ -8,6 +8,7 @@ from aiogram.utils.exceptions import (MessageCantBeDeleted,
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.misc import bot, api_client, dp, logger
 from app.core.utils import Date
+from app.modules.base.handlers import cmd_start
 from app.modules.schedule.consts import week_days_btn
 from app.modules.schedule.templates import error_text, flood_text, \
     cant_find_query, enter_date_text, error_date_text, next_week_text, \
@@ -142,6 +143,10 @@ async def shift_date(message: types.Message, state: FSMContext):
 @dp.throttled(handler_throttled, rate=.5)
 async def search_query(message: types.Message, state: FSMContext):
     usr_data = await state.get_data()
+    if "query" not in usr_data or "query_type" not in usr_data:
+        await cmd_start(message, state)
+        return
+
     date = Date(usr_data.get("search_date", None))
     date.day = week_days_btn[message.text]
     text, markup = await schedule_view(
