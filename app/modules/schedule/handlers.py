@@ -25,7 +25,7 @@ __all__ = ["query_register", "query_type_register", "search_query",
 
 async def handler_throttled(message, **kwargs):
     if isinstance(message, types.Message):
-        await bot.delete_message(message.chat.id, message.message_id)
+        await message.delete()
     elif isinstance(message, types.CallbackQuery):
         await message.answer(flood_text, show_alert=True)
 
