@@ -24,3 +24,4 @@ services:
       - bot_config.env
     volumes:
       - ./logs:/app/logs
+      - /etc/localtime:/etc/localtime:ro
