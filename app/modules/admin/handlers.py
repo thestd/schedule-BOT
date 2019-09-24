@@ -67,13 +67,16 @@ async def msg_to_users(message: types.Message, state: FSMContext):
     err_count = 0
     for user in users_list:
         try:
-            await message.bot.send_message(
+            is_sent = await message.bot.send_message(
                 chat_id=user["chat"],
                 text=message.text,
                 reply_markup=markup,
                 clear=True
             )
-            sent_count += 1
+            if is_sent:
+                sent_count += 1
+            else:
+                err_count += 1
         except Exception as e:
             err_count += 1
             logger.error(e, exc_info=True)
