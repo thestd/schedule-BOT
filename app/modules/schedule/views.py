@@ -75,10 +75,10 @@ async def _get_schedule_markup(week_day: int) -> types.ReplyKeyboardMarkup:
         types.KeyboardButton(next_week_text),
     )
     markup.add(
+        types.KeyboardButton(change_query_btn_text),
         types.KeyboardButton(manual_date_btn_entry),
     )
     markup.add(
-        types.KeyboardButton(change_query_btn_text),
         types.KeyboardButton(about_btn_text),
         types.KeyboardButton(help_btn_text),
     )
