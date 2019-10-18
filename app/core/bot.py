@@ -3,7 +3,7 @@ from typing import Union
 from aiogram import Bot, types
 from aiogram.utils.exceptions import (
     MessageToDeleteNotFound, MessageCantBeDeleted,
-    BotBlocked)
+    BotBlocked, Unauthorized)
 
 import app.core.misc as misc
 
@@ -39,7 +39,8 @@ class ClearBot(Bot):
                     chat_id,
                     msg
                 )
-            except (MessageCantBeDeleted, MessageToDeleteNotFound):
+            except (MessageCantBeDeleted, MessageToDeleteNotFound,
+                    Unauthorized):
                 pass
 
         await misc.storage.update_data(
