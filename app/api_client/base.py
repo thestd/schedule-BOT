@@ -4,6 +4,7 @@ from aiohttp import ClientSession
 
 from app.api_client.exceptions import ServiceNotResponse
 from app.core.config import API_URL, CACHE_TIME
+from app.core.misc import logger
 from app.core.utils import Singleton, RedisCache
 
 __all__ = ["ApiClient"]
@@ -34,6 +35,7 @@ class ApiClient(metaclass=Singleton):
                 if resp.status == 200:
                     res = await resp.json()
                 else:
+                    logger.error(f"Service not response: Code {resp.status}")
                     raise ServiceNotResponse(f"Code: {resp.status}")
             try:
                 await self._cache.set_value(f"pred_type:{json.dumps(params)}",
