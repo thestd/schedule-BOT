@@ -80,6 +80,8 @@ async def msg_to_users(message: types.Message, state: FSMContext):
         except Exception as e:
             err_count += 1
             logger.error(e, exc_info=True)
+            
+        await asyncio.sleep(0.1)
     await message.answer(
         f"Total send: {sent_count}\n Errors: {err_count}"
     )
