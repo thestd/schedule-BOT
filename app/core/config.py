@@ -15,6 +15,7 @@ CACHE_TIME = int(os.environ.get("CACHE_TIME", 6 * 3600))
 REDIS_URL = os.environ.get("REDIS_URL", "localhost")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", 6379))
 REDIS_DB = int(os.environ.get("REDIS_DB", 0))
+REDIS_URI = os.getenv("REDIS_URI")
 
 API_URL = os.environ.get("API_URL", "http://api.pnu-bot.pp.ua")
 
