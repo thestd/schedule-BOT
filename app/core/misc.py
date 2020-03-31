@@ -9,7 +9,7 @@ from aiogram.utils.executor import Executor
 from app.api_client.base import ApiClient
 from app.core.bot import ClearBot
 from app.core.config import (
-    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES
+    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES, MONGO_DB
 )
 from app.core.utils import RedisCache
 
@@ -39,7 +39,7 @@ redis_cache = RedisCache()
 api_client = ApiClient(redis_cache)
 
 bot = ClearBot(token=TOKEN, loop=loop)
-storage = MongoStorage(host=MONGO_URL, port=MONGO_PORT)
+storage = MongoStorage(host=MONGO_URL, port=MONGO_PORT, db_name=MONGO_DB)
 dp = Dispatcher(bot, storage=storage)
 
 runner = Executor(dp, skip_updates=SKIP_UPDATES)
