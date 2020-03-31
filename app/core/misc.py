@@ -9,7 +9,7 @@ from aiogram.utils.executor import Executor
 from app.api_client.base import ApiClient
 from app.core.bot import ClearBot
 from app.core.config import (
-    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES, MONGO_DB, MONGO_USER, MONGO_PSWD
+    TOKEN, MONGO_URL, MONGO_PORT, SKIP_UPDATES, MONGO_DB, MONGO_USER, MONGO_PSWD, REDIS_URI
 )
 from app.core.utils import RedisCache
 
@@ -35,7 +35,7 @@ uvloop.install()
 
 loop = asyncio.get_event_loop()
 
-redis_cache = RedisCache()
+redis_cache = RedisCache(uri=REDIS_URI)
 api_client = ApiClient(redis_cache)
 
 bot = ClearBot(token=TOKEN, loop=loop)
