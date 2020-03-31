@@ -20,7 +20,7 @@ class Singleton(type):
 
 
 class RedisCache:
-    __slots__ = ("_url", "_port", "_db_id", "_redis",)
+    __slots__ = ("_url", "_port", "_db_id", "_redis", "_uri")
 
     def __init__(self, url: str = REDIS_URL, port: int = REDIS_PORT,
                  db: int = REDIS_DB, uri=None):
