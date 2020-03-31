@@ -23,7 +23,7 @@ API_URL = os.environ.get("API_URL", "http://api.pnu-bot.pp.ua")
 BASE_APP = __package__.split('.')[0]
 
 MONGO_URL = os.environ.get("MONGO_URL", "localhost")
-MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
+MONGO_PORT = os.environ.get("MONGO_PORT", 27017)
 MONGO_USER = os.getenv("MONGO_USER")
 MONGO_PSWD = os.getenv("MONGO_PSWD")
 MONGO_DB = os.getenv("MONGO_DB", "aiogram_fsm")
@@ -36,12 +36,3 @@ modules = [
     "schedule",
     "tail"
 ]
-uri = 'mongodb://'
-
-# set username + password
-if MONGO_USER and MONGO_PSWD:
-    uri += f'{MONGO_USER}:{MONGO_PSWD}@'
-
-# set host and port (optional)
-uri += f'{MONGO_URL}:{MONGO_PORT}' if MONGO_URL else f'localhost:{MONGO_PORT}'
-print(uri)
