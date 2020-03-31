@@ -22,6 +22,8 @@ BASE_APP = __package__.split('.')[0]
 
 MONGO_URL = os.environ.get("MONGO_URL", "localhost")
 MONGO_PORT = int(os.environ.get("MONGO_PORT", 27017))
+MONGO_USER = os.getenv("MONGO_USER")
+MONGO_PSWD = os.getenv("MONGO_PSWD")
 MONGO_DB = os.getenv("MONGO_DB", "aiogram_fsm")
 
 ADMIN_IDS = [int(i) for i in os.environ.get("ADMIN_IDS", "").split()]
