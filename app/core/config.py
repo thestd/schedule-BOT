@@ -36,3 +36,12 @@ modules = [
     "schedule",
     "tail"
 ]
+uri = 'mongodb://'
+
+# set username + password
+if MONGO_USER and MONGO_PSWD:
+    uri += f'{MONGO_USER}:{MONGO_PSWD}@'
+
+# set host and port (optional)
+uri += f'{MONGO_URL}:{MONGO_PORT}' if MONGO_URL else f'localhost:{MONGO_PORT}'
+print(uri)
