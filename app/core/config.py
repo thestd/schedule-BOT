@@ -1,7 +1,6 @@
 import os
 
 TOKEN = os.environ.get("TOKEN", None)
-print(TOKEN)
 SKIP_UPDATES = int(os.environ.get("SKIP_UPDATES", 0))
 
 WEBHOOK_ENABLE = int(os.environ.get("WEBHOOK_ENABLE", 0))
