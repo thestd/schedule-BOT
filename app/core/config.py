@@ -1,5 +1,7 @@
 import os
 
+import pytz
+
 TOKEN = os.environ.get("TOKEN", None)
 SKIP_UPDATES = int(os.environ.get("SKIP_UPDATES", 0))
 
@@ -28,6 +30,8 @@ MONGO_PSWD = os.getenv("MONGO_PSWD")
 MONGO_DB = os.getenv("MONGO_DB", "aiogram_fsm")
 
 ADMIN_IDS = [int(i) for i in os.environ.get("ADMIN_IDS", "").split()]
+
+TIME_ZONE = pytz.timezone('Europe/Kiev')
 
 modules = [
     "base",
