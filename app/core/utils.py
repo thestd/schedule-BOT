@@ -3,7 +3,7 @@ from typing import Union, Optional
 
 from aioredis import RedisConnection, create_connection, create_redis_pool
 
-from app.core.config import REDIS_URL, REDIS_PORT, REDIS_DB
+from app.core.config import REDIS_URL, REDIS_PORT, REDIS_DB, TIME_ZONE
 
 __all__ = ["Singleton", "RedisCache", "Date"]
 
@@ -71,8 +71,8 @@ class Date:
             self._day = date.weekday()
             self._week_start_date = date - timedelta(self._day)
         else:
-            self._day = datetime.now().weekday()
-            self._week_start_date = datetime.now() - timedelta(self._day)
+            self._day = datetime.now(TIME_ZONE).weekday()
+            self._week_start_date = datetime.now(TIME_ZONE) - timedelta(self._day)
 
     def shift_week(self, days):
         self._week_start_date += timedelta(days)
