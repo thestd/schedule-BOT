@@ -26,7 +26,6 @@ class ApiClient(metaclass=Singleton):
             res = await self._cache.get_value(f"pred_type:{json.dumps(params)}")
         except ConnectionRefusedError as e:
             res = None
-            print(e)
         if not res:
             async with self._session.get(
                     f"{self._api_url}/api/{pred_type}",
