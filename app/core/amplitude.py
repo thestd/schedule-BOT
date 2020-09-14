@@ -1,10 +1,10 @@
+import logging
 from dataclasses import dataclass, asdict
 from typing import Optional
 
 import aiohttp
 
 from app.core.config import AMPLITUDE_URL, AMPLITUDE_API_KEY
-from app.core.misc import logger
 
 headers = {
     'Content-Type': 'application/json',
@@ -45,4 +45,4 @@ async def amplitude_log(event: AmplitudeEvent) -> None:
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.post(AMPLITUDE_URL, data=post_data) as resp:
             msg = f"Response from amplitude: {resp.content}"
-            logger.debug(msg)
+            logging.debug(msg)
