@@ -33,6 +33,9 @@ ADMIN_IDS = [int(i) for i in os.environ.get("ADMIN_IDS", "").split()]
 
 TIME_ZONE = pytz.timezone('Europe/Kiev')
 
+AMPLITUDE_URL = os.getenv("AMPLITUDE_URL", "https://api.amplitude.com/2/httpapi")
+AMPLITUDE_API_KEY = os.getenv("AMPLITUDE_API_KEY", "example-key")
+
 modules = [
     "base",
     "admin",
