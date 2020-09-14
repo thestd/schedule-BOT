@@ -17,9 +17,9 @@ UPDATE_CALLBACK_EVENT = "update_callback_event"
 
 @dataclass
 class UserProperties:
-    username: Optional[str, None]
-    user_first_name: Optional[str, None]
-    user_last_name: Optional[str, None]
+    username: Optional[str]
+    user_first_name: Optional[str]
+    user_last_name: Optional[str]
 
     @classmethod
     def from_telegram_user(cls, user):
