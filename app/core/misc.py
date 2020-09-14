@@ -14,7 +14,7 @@ from app.core.config import (
 from app.core.utils import RedisCache
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
