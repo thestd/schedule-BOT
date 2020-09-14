@@ -44,5 +44,8 @@ async def amplitude_log(event: AmplitudeEvent) -> None:
     }
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.post(AMPLITUDE_URL, data=post_data) as resp:
-            msg = f"Response from amplitude: {resp.content}"
-            logging.debug(msg)
+            try:
+                msg = f"Response from amplitude: {resp.json()}"
+                logging.debug(msg)
+            except Exception as e:
+                logging.error(e)
