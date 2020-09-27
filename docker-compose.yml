@@ -14,14 +14,14 @@ services:
 
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
 
   bot:
+    depends_on:
+      - redis
+      - mongo
     build: .
     restart: always
     env_file:
       - bot_config.env
     volumes:
       - ./logs:/app/logs
-      - /etc/localtime:/etc/localtime:ro
