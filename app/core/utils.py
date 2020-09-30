@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Union, Optional
 
-from aioredis import RedisConnection, create_connection, create_redis_pool
+from aioredis import RedisConnection, create_connection, create_redis_pool, Redis
 
 from app.core.config import REDIS_URL, REDIS_PORT, REDIS_DB, TIME_ZONE
 
@@ -31,7 +31,7 @@ class RedisCache:
         self._redis: Union[RedisConnection, None] = None
 
     async def _get_redis(self) -> RedisConnection:
-        if not isinstance(self._redis, RedisConnection):
+        if not self._redis or self._redis.closed:
             if self._uri:
                 self._redis = await create_redis_pool(self._uri)
             else:
