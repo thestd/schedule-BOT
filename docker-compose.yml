@@ -13,15 +13,21 @@ services:
     image: mvertes/alpine-mongo
 
   redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
+    image: library/redis:6.0.6
+    command: redis-server /usr/local/etc/redis/redis.conf
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
 
   bot:
+    depends_on:
+      - redis
+      - mongo
     build: .
     restart: always
     env_file:
       - bot_config.env
     volumes:
+      - ./:/app
       - ./logs:/app/logs
-      - /etc/localtime:/etc/localtime:ro
