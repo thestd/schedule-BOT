@@ -4,7 +4,7 @@ aiomongo==0.1
 aioredis==1.2.0
 async-timeout==3.0.1
 attrs==19.1.0
-Babel==2.7.0
+Babel==2.9.1
 certifi==2019.6.16
 chardet==3.0.4
 emoji==0.5.3
